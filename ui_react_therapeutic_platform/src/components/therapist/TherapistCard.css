@@ -1,0 +1,156 @@
+.therapist-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.therapist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.therapist-card-header {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.therapist-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 2px solid #3498db;
+}
+
+.therapist-basic-info {
+  flex: 1;
+}
+
+.therapist-name {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.therapist-specialization {
+  margin: 0 0 5px 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.therapist-rating {
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.star {
+  color: #f1c40f;
+  margin-right: 2px;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e8f5e9;
+  color: #388e3c;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.verified-icon {
+  margin-right: 4px;
+}
+
+.therapist-info {
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  color: #34495e;
+}
+
+.therapist-location, .therapist-languages, .therapist-session-cost {
+  margin-bottom: 5px;
+}
+
+.therapist-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ecf0f1;
+}
+
+.therapist-details h3 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.therapist-bio {
+  font-size: 0.9rem;
+  color: #34495e;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.details-button {
+  background-color: transparent;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  text-decoration: underline;
+  margin-bottom: 15px;
+}
+
+.details-button:hover {
+  color: #2980b9;
+}
+
+.therapist-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-button {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-profile {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+}
+
+.view-profile:hover {
+  background-color: #d5dbdb;
+}
+
+.book-appointment {
+  background-color: #3498db;
+  color: white;
+}
+
+.book-appointment:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.book-appointment:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.7;
+} 

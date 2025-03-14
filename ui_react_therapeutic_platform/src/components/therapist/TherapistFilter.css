@@ -1,0 +1,104 @@
+.filter-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.filter-header {
+  padding: 15px 20px;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.filter-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.expand-icon {
+  font-size: 0.8rem;
+}
+
+.filter-form {
+  padding: 20px;
+}
+
+.filter-section {
+  margin-bottom: 15px;
+}
+
+.filter-section label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.filter-section select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 0.9rem;
+}
+
+.language-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+}
+
+.language-option input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.filter-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.apply {
+  background-color: #3498db;
+  color: white;
+}
+
+.apply:hover {
+  background-color: #2980b9;
+}
+
+.reset {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+}
+
+.reset:hover {
+  background-color: #d5dbdb;
+}
+
+@media (max-width: 768px) {
+  .language-options {
+    grid-template-columns: 1fr;
+  }
+} 

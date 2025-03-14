@@ -8,15 +8,18 @@ import org.springframework.context.annotation.Configuration;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Configuration
+@ConditionalOnProperty(name = "firebase.enabled", havingValue = "true", matchIfMissing = false)
 public class FirebaseConfiguration {
 
-    @Value("${FIREBASE_CONFIG_FILE_PATH}")
+    @Value("${FIREBASE_CONFIG_FILE_PATH:src/main/resources/firebase-config.json}")
     private String firebaseConfigFilePath;
 
+    @PostConstruct
     public void init() throws IOException {
-
         try (InputStream firebaseServiceKey = new FileInputStream(firebaseConfigFilePath))
         {
             FirebaseOptions firebaseOptions = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(firebaseServiceKey)).build();
@@ -25,6 +28,5 @@ public class FirebaseConfiguration {
                 FirebaseApp.initializeApp(firebaseOptions);
             }
         }
-
     }
 }

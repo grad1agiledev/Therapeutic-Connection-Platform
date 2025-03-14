@@ -1,0 +1,66 @@
+.therapist-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.intro-text {
+  text-align: center;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.therapist-count {
+  margin: 20px 0;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.therapist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #3498db;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .therapist-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .therapist-list-container {
+    padding: 10px;
+  }
+} 
