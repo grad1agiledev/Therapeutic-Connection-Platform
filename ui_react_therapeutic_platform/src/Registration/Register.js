@@ -12,31 +12,32 @@ function Register() {
 
   const handleRegister = async (e) =>
   {
-  try {
+   e.preventDefault();
+  //try {
         const userInfos = await createUserWithEmailAndPassword(auth, email, password);
         const token = await userInfos.user.getIdToken();
 
-          const response = await fetch('http://localhost:8080/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  idToken: token,
-                  phoneNumber: phone,
-                  address: address,
-                }),
-              });
-
-               if (response.ok) {
-                      alert('Registration successful!');
-                    } else {
-                      const errorMsg = await response.text();
-                      alert('Error: ' + errorMsg);
-                    }
-                  } catch (error) {
-                    console.error('Registration error is:', error);
-                    alert('Registration failed: ' + error.message);
+//          const response = await fetch('http://localhost:8080/api/register', {
+//                method: 'POST',
+//                headers: { 'Content-Type': 'application/json' },
+//                body: JSON.stringify({
+//                  idToken: token,
+//                  phoneNumber: phone,
+//                  address: address,
+//                }),
+//              });
+//
+//               if (response.ok) {
+//                      alert('Registration successful!');
+//                    } else {
+//                      const errorMsg = await response.text();
+//                      alert('Error: ' + errorMsg);
+//                    }
+//                  } catch (error) {
+//                    console.error('Registration error is:', error);
+//                    alert('Registration failed: ' + error.message);
                   }
-                };
+          //    };
 
    return (
     <div>
