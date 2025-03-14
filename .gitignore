@@ -37,6 +37,3 @@ out/
 .vscode/
 
 
-##for firebase configs
-src/main/resources/therapeutic-connection-firebase-adminsdk-fbsvc-4d0e0fc357.json
-
