@@ -1,29 +1,46 @@
-import React from 'react';
+import React , { useState } from 'react';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import TherapistList from './components/therapist/TherapistList';
+import Register from './Registration/Register'
+import { Link } from 'react-router-dom';
 
 function App() {
+
+//const [showRegister, setShowRegister] = useState(false);
+
   return (
+  <Router>
     <div className="app-container">
       <header className="app-header">
         <h1>Therapeutic Connection Platform</h1>
         <nav className="app-nav">
-          <button className="nav-button">Home</button>
-          <button className="nav-button active">Therapists</button>
-          <button className="nav-button">About Us</button>
-          <button className="nav-button login">Login</button>
-          <button className="nav-button register">Register</button>
+          <Link to="/" className="nav-button">Home</Link>
+                      <Link to="/therapists" className="nav-button">Therapists</Link>
+                      <Link to="/about" className="nav-button">About Us</Link>
+                      <Link to="/login" className="nav-button login">Login</Link>
+                      <Link to="/register" className="nav-button register">Register</Link>
         </nav>
       </header>
-      
-      <main className="app-main">
-        <TherapistList />
-      </main>
+
+
+
+
+     <main className="app-main">
+               <Routes>
+                 <Route path="/" element={<TherapistList />} />
+                 <Route path="/register" element={<Register />} />
+               </Routes>
+             </main>
+
       
       <footer className="app-footer">
         <p>&copy; 2023 Therapeutic Connection Platform. All rights reserved.</p>
       </footer>
     </div>
+
+</Router>
+
   );
 }
 

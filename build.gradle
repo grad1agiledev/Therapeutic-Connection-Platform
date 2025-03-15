@@ -26,6 +26,7 @@ dependencies {
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.10.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
+	implementation 'com.stripe:stripe-java:23.0.0'
 }
 
 tasks.named('test') {
