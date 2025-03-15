@@ -1,8 +1,6 @@
 package com.project.Therapeutic_Connection_Platform.integration;
 
-import com.project.Therapeutic_Connection_Platform.dto.CreateCustomerRequest;
-import com.project.Therapeutic_Connection_Platform.dto.CreatePaymentIntentRequest;
-import com.project.Therapeutic_Connection_Platform.dto.PaymentIntentResponse;
+import com.project.Therapeutic_Connection_Platform.dto.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +8,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,63 +22,127 @@ class StripePaymentIntegrationTest {
 
     @Test
     void testPaymentFlow() {
-   
-        CreateCustomerRequest customerRequest = new CreateCustomerRequest("test@example.com", "Test User");
-        ResponseEntity<String> customerResponse = restTemplate.postForEntity(
-                "/api/payment/create-customer", customerRequest, String.class);
+        String patientId = createTestPatient("test@example.com", "Test Patient");
         
-        assertEquals(HttpStatus.OK, customerResponse.getStatusCode());
-        assertNotNull(customerResponse.getBody());
-        String customerId = customerResponse.getBody();
+        PaymentIntentResponse paymentIntent = createPaymentIntent(patientId, 2000L, "standard_session", false);
         
+        PaymentIntentResponse confirmedPayment = confirmPaymentIntent(paymentIntent.getId());
+        assertEquals("succeeded", confirmedPayment.getStatus());
+    }
+
+    @Test
+    void testSubscriptionFlow() {
+        String patientId = createTestPatient("subscription@example.com", "Subscription Patient");
         
-        CreatePaymentIntentRequest paymentRequest = new CreatePaymentIntentRequest(
-                2000L, "usd", "pm_card_visa", customerId);
-        ResponseEntity<PaymentIntentResponse> paymentResponse = restTemplate.postForEntity(
-                "/api/payment/create-payment-intent", paymentRequest, PaymentIntentResponse.class);
+        SubscriptionResponse subscription = createSubscription(patientId, "standard_session", 1, false, 0.0);
+        assertEquals("active", subscription.getStatus());
         
-        assertEquals(HttpStatus.OK, paymentResponse.getStatusCode());
-        assertNotNull(paymentResponse.getBody());
+        SubscriptionResponse updatedSubscription = updateSubscription(subscription.getId(), "standard_session", 15.0);
+        assertEquals("active", updatedSubscription.getStatus());
         
-        PaymentIntentResponse paymentIntent = paymentResponse.getBody();
-        assertNotNull(paymentIntent.getId());
-        assertNotNull(paymentIntent.getClientSecret());
-        assertEquals("requires_confirmation", paymentIntent.getStatus());
+        SubscriptionResponse canceledSubscription = cancelSubscription(subscription.getId());
+        assertEquals("canceled", canceledSubscription.getStatus());
+    }
+
+    @Test
+    void testReceiptGeneration() {
+        String patientId = createTestPatient("receipt@example.com", "Receipt Patient");
         
-  
-        ResponseEntity<PaymentIntentResponse> confirmResponse = restTemplate.postForEntity(
-                "/api/payment/confirm-payment-intent/" + paymentIntent.getId(), null, PaymentIntentResponse.class);
+        PaymentIntentResponse paymentIntent = createPaymentIntent(patientId, 5000L, "initial_consultation", false);
         
-        assertEquals(HttpStatus.OK, confirmResponse.getStatusCode());
-        assertNotNull(confirmResponse.getBody());
-        assertEquals("succeeded", confirmResponse.getBody().getStatus());
+        confirmPaymentIntent(paymentIntent.getId());
+        
+        ReceiptResponse receipt = generateReceipt(paymentIntent.getId());
+        assertNotNull(receipt.getHostedUrl());
+        assertNotNull(receipt.getPdfUrl());
+    }
+
+    @Test
+    void testGetSessionRates() {
+        ResponseEntity<Map> response = restTemplate.getForEntity("/api/payment/session-rates", Map.class);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().containsKey("initial_consultation"));
+        assertTrue(response.getBody().containsKey("standard_session"));
     }
     
-    @Test
-    void testPaymentFlowWithCancellation() {
-  
-        CreateCustomerRequest customerRequest = new CreateCustomerRequest("cancel@example.com", "Cancel User");
-        ResponseEntity<String> customerResponse = restTemplate.postForEntity(
-                "/api/payment/create-customer", customerRequest, String.class);
+    private String createTestPatient(String email, String name) {
+        CreateCustomerRequest patientRequest = new CreateCustomerRequest(email, name);
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                "/api/payment/create-customer", patientRequest, String.class);
         
-        assertEquals(HttpStatus.OK, customerResponse.getStatusCode());
-        String customerId = customerResponse.getBody();
-        
-       
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        String patientId = response.getBody();
+        assertNotNull(patientId);
+        return patientId;
+    }
+    
+    private PaymentIntentResponse createPaymentIntent(String patientId, Long amount, String sessionType, boolean isHsa) {
         CreatePaymentIntentRequest paymentRequest = new CreatePaymentIntentRequest(
-                3000L, "usd", "pm_card_visa", customerId);
-        ResponseEntity<PaymentIntentResponse> paymentResponse = restTemplate.postForEntity(
+                amount, "usd", "pm_card_visa", patientId, sessionType, isHsa);
+        ResponseEntity<PaymentIntentResponse> response = restTemplate.postForEntity(
                 "/api/payment/create-payment-intent", paymentRequest, PaymentIntentResponse.class);
         
-        assertEquals(HttpStatus.OK, paymentResponse.getStatusCode());
-        PaymentIntentResponse paymentIntent = paymentResponse.getBody();
-        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        PaymentIntentResponse paymentIntent = response.getBody();
+        assertNotNull(paymentIntent);
+        assertNotNull(paymentIntent.getId());
+        assertEquals("requires_confirmation", paymentIntent.getStatus());
+        return paymentIntent;
+    }
     
-        ResponseEntity<PaymentIntentResponse> cancelResponse = restTemplate.postForEntity(
-                "/api/payment/cancel-payment-intent/" + paymentIntent.getId(), null, PaymentIntentResponse.class);
+    private PaymentIntentResponse confirmPaymentIntent(String paymentIntentId) {
+        ResponseEntity<PaymentIntentResponse> response = restTemplate.postForEntity(
+                "/api/payment/confirm-payment-intent/" + paymentIntentId, null, PaymentIntentResponse.class);
         
-        assertEquals(HttpStatus.OK, cancelResponse.getStatusCode());
-        assertNotNull(cancelResponse.getBody());
-        assertEquals("canceled", cancelResponse.getBody().getStatus());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        PaymentIntentResponse confirmedIntent = response.getBody();
+        assertNotNull(confirmedIntent);
+        return confirmedIntent;
+    }
+    
+    private SubscriptionResponse createSubscription(String patientId, String sessionType, 
+                                                  Integer intervalCount, boolean isHsa, Double discountPercentage) {
+        CreateSubscriptionRequest subscriptionRequest = new CreateSubscriptionRequest(
+                patientId, "pm_card_visa", sessionType, intervalCount, isHsa, discountPercentage);
+        ResponseEntity<SubscriptionResponse> response = restTemplate.postForEntity(
+                "/api/payment/create-subscription", subscriptionRequest, SubscriptionResponse.class);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        SubscriptionResponse subscription = response.getBody();
+        assertNotNull(subscription);
+        return subscription;
+    }
+    
+    private SubscriptionResponse updateSubscription(String subscriptionId, String sessionType, Double discountPercentage) {
+        UpdateSubscriptionRequest updateRequest = new UpdateSubscriptionRequest(sessionType, discountPercentage);
+        ResponseEntity<SubscriptionResponse> response = restTemplate.postForEntity(
+                "/api/payment/update-subscription/" + subscriptionId, updateRequest, SubscriptionResponse.class);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        SubscriptionResponse updatedSubscription = response.getBody();
+        assertNotNull(updatedSubscription);
+        return updatedSubscription;
+    }
+    
+    private SubscriptionResponse cancelSubscription(String subscriptionId) {
+        ResponseEntity<SubscriptionResponse> response = restTemplate.postForEntity(
+                "/api/payment/cancel-subscription/" + subscriptionId, null, SubscriptionResponse.class);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        SubscriptionResponse canceledSubscription = response.getBody();
+        assertNotNull(canceledSubscription);
+        return canceledSubscription;
+    }
+    
+    private ReceiptResponse generateReceipt(String paymentIntentId) {
+        ResponseEntity<ReceiptResponse> response = restTemplate.postForEntity(
+                "/api/payment/generate-receipt/" + paymentIntentId, null, ReceiptResponse.class);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ReceiptResponse receipt = response.getBody();
+        assertNotNull(receipt);
+        return receipt;
     }
 } 
