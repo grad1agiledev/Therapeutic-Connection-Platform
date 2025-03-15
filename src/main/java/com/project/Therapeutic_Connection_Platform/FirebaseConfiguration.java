@@ -12,10 +12,9 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Configuration
-@ConditionalOnProperty(name = "firebase.enabled", havingValue = "true", matchIfMissing = false)
 public class FirebaseConfiguration {
 
-    @Value("${FIREBASE_CONFIG_FILE_PATH:src/main/resources/firebase-config.json}")
+    @Value("${FIREBASE_CONFIG_FILE_PATH}")
     private String firebaseConfigFilePath;
 
     @PostConstruct
