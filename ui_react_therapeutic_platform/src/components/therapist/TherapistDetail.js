@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TherapistDetail.css';
+import { Link } from 'react-router-dom';
+//import Register from '././Registration/Register';
 
 const TherapistDetail = ({ therapistId, onBack }) => {
   const [therapist, setTherapist] = useState(null);
@@ -96,7 +98,7 @@ const TherapistDetail = ({ therapistId, onBack }) => {
           Book Appointment (Login Required)
         </button>
         <p className="login-prompt">
-          To book an appointment, please <a href="/login">login</a> or <a href="/register">register</a>.
+         To book an appointment, please <Link to="/login">login</Link> or <Link to="/register">register</Link>.
         </p>
       </div>
     </div>
