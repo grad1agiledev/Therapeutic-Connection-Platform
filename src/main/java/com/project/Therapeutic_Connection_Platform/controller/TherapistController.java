@@ -42,4 +42,15 @@ public class TherapistController {
             @RequestParam(required = false) List<String> languages) {
         return ResponseEntity.ok(therapistService.searchTherapists(specialization, location, languages));
     }
+
+    @GetMapping("/search-and-sort")
+    public ResponseEntity<List<Therapist>> searchAndSortTherapists(
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) List<String> languages,
+            @RequestParam(required = false, defaultValue = "name") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
+        return ResponseEntity.ok(therapistService.searchAndSortTherapists(
+                specialization, location, languages, sortBy, sortOrder));
+    }
 } 

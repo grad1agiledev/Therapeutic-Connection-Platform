@@ -13,7 +13,9 @@ const TherapistList = () => {
   const [filters, setFilters] = useState({
     specialization: '',
     location: '',
-    languages: []
+    languages: [],
+    sortBy: 'name',
+    sortOrder: 'asc'
   });
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
 
@@ -43,7 +45,14 @@ const TherapistList = () => {
       
       // Show all therapists if filters are empty
       if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0) {
-        setFilteredTherapists(therapists);
+        // Even if no filters, we still want to sort
+        const params = {
+          sortBy: newFilters.sortBy,
+          sortOrder: newFilters.sortOrder
+        };
+        
+        const response = await axios.get('http://localhost:8080/api/therapists/search-and-sort', { params });
+        setFilteredTherapists(response.data);
         setLoading(false);
         return;
       }
@@ -54,7 +63,11 @@ const TherapistList = () => {
       if (newFilters.location) params.location = newFilters.location;
       if (newFilters.languages.length > 0) params.languages = newFilters.languages;
       
-      const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
+      // Add sort parameters
+      params.sortBy = newFilters.sortBy;
+      params.sortOrder = newFilters.sortOrder;
+      
+      const response = await axios.get('http://localhost:8080/api/therapists/search-and-sort', { params });
       setFilteredTherapists(response.data);
       setLoading(false);
     } catch (err) {

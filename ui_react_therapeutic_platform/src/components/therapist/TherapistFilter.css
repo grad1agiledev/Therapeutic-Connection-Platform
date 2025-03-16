@@ -42,11 +42,17 @@
 
 .filter-section select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 8px;
+  border: 1px solid #ccc;
   border-radius: 4px;
   background-color: white;
-  font-size: 0.9rem;
+  font-size: 14px;
+}
+
+.filter-section select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
 .language-options {
@@ -97,8 +103,29 @@
   background-color: #d5dbdb;
 }
 
+/* Sort order options */
+.sort-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.sort-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.sort-option input[type="radio"] {
+  margin-right: 5px;
+}
+
+/* Responsive adjustments for sort options */
 @media (max-width: 768px) {
   .language-options {
     grid-template-columns: 1fr;
+  }
+  .sort-options {
+    flex-direction: column;
   }
 } 

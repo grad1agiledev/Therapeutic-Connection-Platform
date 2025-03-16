@@ -5,6 +5,8 @@ const TherapistFilter = ({ onFilterChange }) => {
   const [specialization, setSpecialization] = useState('');
   const [location, setLocation] = useState('');
   const [languages, setLanguages] = useState([]);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Language options
@@ -38,6 +40,20 @@ const TherapistFilter = ({ onFilterChange }) => {
     { value: 'Cognitive Behavioral Therapy', label: 'Cognitive Behavioral Therapy' }
   ];
 
+  // Sort options
+  const sortByOptions = [
+    { value: 'name', label: 'Name' },
+    { value: 'rating', label: 'Rating' },
+    { value: 'sessionCost', label: 'Session Cost' },
+    { value: 'location', label: 'Location' }
+  ];
+
+  // Sort order options
+  const sortOrderOptions = [
+    { value: 'asc', label: 'Ascending' },
+    { value: 'desc', label: 'Descending' }
+  ];
+
   const handleLanguageChange = (e) => {
     const value = e.target.value;
     setLanguages(
@@ -52,7 +68,9 @@ const TherapistFilter = ({ onFilterChange }) => {
     onFilterChange({
       specialization,
       location,
-      languages
+      languages,
+      sortBy,
+      sortOrder
     });
   };
 
@@ -60,10 +78,14 @@ const TherapistFilter = ({ onFilterChange }) => {
     setSpecialization('');
     setLocation('');
     setLanguages([]);
+    setSortBy('name');
+    setSortOrder('asc');
     onFilterChange({
       specialization: '',
       location: '',
-      languages: []
+      languages: [],
+      sortBy: 'name',
+      sortOrder: 'asc'
     });
   };
 
@@ -126,6 +148,36 @@ const TherapistFilter = ({ onFilterChange }) => {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="filter-section">
+            <label htmlFor="sortBy">Sort By:</label>
+            <select
+              id="sortBy"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              {sortByOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-section">
+            <label htmlFor="sortOrder">Sort Order:</label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              {sortOrderOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="filter-actions">

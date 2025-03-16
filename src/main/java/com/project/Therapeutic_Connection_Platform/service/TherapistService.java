@@ -105,4 +105,47 @@ public class TherapistService {
                         therapist.getLanguages().stream().anyMatch(languages::contains))
                 .collect(Collectors.toList());
     }
+
+    public List<Therapist> searchAndSortTherapists(String specialization, String location, List<String> languages, 
+                                                  String sortBy, String sortOrder) {
+        List<Therapist> filteredTherapists = searchTherapists(specialization, location, languages);
+        
+        if (sortBy != null && !sortBy.isEmpty()) {
+            switch (sortBy) {
+                case "name":
+                    if ("desc".equalsIgnoreCase(sortOrder)) {
+                        filteredTherapists.sort((t1, t2) -> t2.getName().compareToIgnoreCase(t1.getName()));
+                    } else {
+                        filteredTherapists.sort((t1, t2) -> t1.getName().compareToIgnoreCase(t2.getName()));
+                    }
+                    break;
+                case "rating":
+                    if ("desc".equalsIgnoreCase(sortOrder)) {
+                        filteredTherapists.sort((t1, t2) -> Double.compare(t2.getRating(), t1.getRating()));
+                    } else {
+                        filteredTherapists.sort((t1, t2) -> Double.compare(t1.getRating(), t2.getRating()));
+                    }
+                    break;
+                case "sessionCost":
+                    if ("desc".equalsIgnoreCase(sortOrder)) {
+                        filteredTherapists.sort((t1, t2) -> Double.compare(t2.getSessionCost(), t1.getSessionCost()));
+                    } else {
+                        filteredTherapists.sort((t1, t2) -> Double.compare(t1.getSessionCost(), t2.getSessionCost()));
+                    }
+                    break;
+                case "location":
+                    if ("desc".equalsIgnoreCase(sortOrder)) {
+                        filteredTherapists.sort((t1, t2) -> t2.getLocation().compareToIgnoreCase(t1.getLocation()));
+                    } else {
+                        filteredTherapists.sort((t1, t2) -> t1.getLocation().compareToIgnoreCase(t2.getLocation()));
+                    }
+                    break;
+                default:
+                    // Default sorting by name ascending
+                    filteredTherapists.sort((t1, t2) -> t1.getName().compareToIgnoreCase(t2.getName()));
+            }
+        }
+        
+        return filteredTherapists;
+    }
 } 
