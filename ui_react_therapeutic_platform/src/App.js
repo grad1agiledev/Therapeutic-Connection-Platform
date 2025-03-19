@@ -1,8 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import TherapistList from './components/therapist/TherapistList';
+import VideoConference from './components/video_conference/VideoConference';
 
 function App() {
+
+  const [isVideoConferenceActive, setIsVideoConferenceActive] = useState(false);
+  const isDevelopment = process.env.REACT_APP_ENV === 'development';
+  
+  const handleStartVideoConference = () => {
+    // Toggle video conference state
+    setIsVideoConferenceActive(!isVideoConferenceActive);
+  };
+  
   return (
     <div className="app-container">
       <header className="app-header">
@@ -13,15 +23,23 @@ function App() {
           <button className="nav-button">About Us</button>
           <button className="nav-button login">Login</button>
           <button className="nav-button register">Register</button>
+          {/* TODO: Remove this button after real implementation */}
+          {isDevelopment && (
+          <button className="nav-button" onClick={handleStartVideoConference}>Start Video Conference</button>
+          )}
         </nav>
       </header>
       
       <main className="app-main">
-        <TherapistList />
+      {isVideoConferenceActive ? (
+          <VideoConference />
+        ) : (
+          <TherapistList />
+        )}
       </main>
       
       <footer className="app-footer">
-        <p>&copy; 2023 Therapeutic Connection Platform. All rights reserved.</p>
+        <p>&copy; 2025 Therapeutic Connection Platform. All rights reserved.</p>
       </footer>
     </div>
   );
