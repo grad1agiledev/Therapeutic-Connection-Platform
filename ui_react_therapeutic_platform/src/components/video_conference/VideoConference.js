@@ -9,7 +9,7 @@ const VideoConference = ({ userId }) => {
     useEffect(() => {
         const fetchMeetingDetails = async () => {
             try {
-                const response = await fetch(`/meeting?userId=${userId}`);
+                const response = await fetch(`http://localhost:8080/api/meetings/details/${userId}`);
                 if (!response.ok) throw new Error("Failed to fetch meeting details");
 
                 const meetings = await response.json();
@@ -24,7 +24,8 @@ const VideoConference = ({ userId }) => {
         fetchMeetingDetails();
     }, [userId]);
 
-    useEffect(() => {
+    useEffect(() => {   
+        if (!meetingData) return;
         if (jitsiContainerRef.current) {
             // Load Jitsi API script dynamically
             const script = document.createElement("script");
@@ -40,12 +41,12 @@ const VideoConference = ({ userId }) => {
 
         const domain = "meet.jit.si";
         const options = {
-            roomName: "threapy-app-test-randomsentencefortest175478",
-            meetingPassword: "1234",
+            roomName: meetingData.meetingName,
             width: "100%",
             height: "100%",
             parentNode: jitsiContainerRef.current,
             userInfo: {
+                //TODO: Fetch username using the id and display that
                 displayName: "User " + userId,
             },
         };
