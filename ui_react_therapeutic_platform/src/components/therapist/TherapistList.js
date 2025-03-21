@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TherapistCard from './TherapistCard';
 import TherapistFilter from './TherapistFilter';
+import TherapistSort from './TherapistSort';
 import TherapistDetail from './TherapistDetail';
 import './TherapistList.css';
 
@@ -15,6 +16,7 @@ const TherapistList = () => {
     location: '',
     languages: []
   });
+  const [sortConfig, setSortConfig] = useState({ field: 'name', order: 'asc' });
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ const TherapistList = () => {
         setLoading(true);
         const response = await axios.get('http://localhost:8080/api/therapists');
         setTherapists(response.data);
-        setFilteredTherapists(response.data);
+        setFilteredTherapists(sortTherapists(response.data, sortConfig));
         setLoading(false);
       } catch (err) {
         setError('An error occurred while loading therapist information. Please try again later.');
@@ -35,6 +37,31 @@ const TherapistList = () => {
     fetchTherapists();
   }, []);
 
+  const sortTherapists = (therapistList, { field, order }) => {
+    return [...therapistList].sort((a, b) => {
+      let comparison = 0;
+      
+      switch (field) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'experience':
+          comparison = a.yearsOfExperience - b.yearsOfExperience;
+          break;
+        case 'rating':
+          comparison = a.rating - b.rating;
+          break;
+        case 'price':
+          comparison = a.hourlyRate - b.hourlyRate;
+          break;
+        default:
+          comparison = 0;
+      }
+      
+      return order === 'asc' ? comparison : -comparison;
+    });
+  };
+
   const handleFilterChange = async (newFilters) => {
     setFilters(newFilters);
     
@@ -43,7 +70,7 @@ const TherapistList = () => {
       
       // Show all therapists if filters are empty
       if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0) {
-        setFilteredTherapists(therapists);
+        setFilteredTherapists(sortTherapists(therapists, sortConfig));
         setLoading(false);
         return;
       }
@@ -55,13 +82,18 @@ const TherapistList = () => {
       if (newFilters.languages.length > 0) params.languages = newFilters.languages;
       
       const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
-      setFilteredTherapists(response.data);
+      setFilteredTherapists(sortTherapists(response.data, sortConfig));
       setLoading(false);
     } catch (err) {
       setError('An error occurred while filtering therapists. Please try again later.');
       setLoading(false);
       console.error('Filtering error:', err);
     }
+  };
+
+  const handleSortChange = (newSortConfig) => {
+    setSortConfig(newSortConfig);
+    setFilteredTherapists(sortTherapists(filteredTherapists, newSortConfig));
   };
 
   const handleViewProfile = (therapistId) => {
@@ -92,6 +124,7 @@ const TherapistList = () => {
       </p>
       
       <TherapistFilter onFilterChange={handleFilterChange} />
+      <TherapistSort onSortChange={handleSortChange} />
       
       <div className="therapist-count">
         {filteredTherapists.length} therapists found
