@@ -5,6 +5,8 @@ import TherapistFilter from './TherapistFilter';
 import TherapistSort from './TherapistSort';
 import TherapistDetail from './TherapistDetail';
 import './TherapistList.css';
+import { auth, db } from '../../firebaseConfig';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);
@@ -40,24 +42,24 @@ const TherapistList = () => {
   const sortTherapists = (therapistList, { field, order }) => {
     return [...therapistList].sort((a, b) => {
       let comparison = 0;
-      
+
       switch (field) {
         case 'name':
-          comparison = a.name.localeCompare(b.name);
+          comparison = a.user.fullName.localeCompare(b.user.fullName);
           break;
-        case 'experience':
-          comparison = a.yearsOfExperience - b.yearsOfExperience;
-          break;
+//        case 'experience':
+//          comparison = a.yearsOfExperience - b.yearsOfExperience;
+//          break;
         case 'rating':
           comparison = a.rating - b.rating;
           break;
         case 'price':
-          comparison = a.hourlyRate - b.hourlyRate;
+          comparison = a.sessionCost - b.sessionCost;
           break;
         default:
           comparison = 0;
       }
-      
+
       return order === 'asc' ? comparison : -comparison;
     });
   };
@@ -70,7 +72,7 @@ const TherapistList = () => {
       
       // Show all therapists if filters are empty
       if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0) {
-        setFilteredTherapists(sortTherapists(therapists, sortConfig));
+        //setFilteredTherapists(sortTherapists(therapists, sortConfig));
         setLoading(false);
         return;
       }
@@ -82,7 +84,7 @@ const TherapistList = () => {
       if (newFilters.languages.length > 0) params.languages = newFilters.languages;
       
       const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
-      setFilteredTherapists(sortTherapists(response.data, sortConfig));
+     // setFilteredTherapists(sortTherapists(response.data, sortConfig));
       setLoading(false);
     } catch (err) {
       setError('An error occurred while filtering therapists. Please try again later.');
