@@ -1,26 +1,49 @@
 package com.project.Therapeutic_Connection_Platform.model;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 
+@Entity
+@Table(name = "therapists")
 public class Therapist {
-    private String id;
-    private String name;
+
+    @Id
+    @Column(name = "profile_id", nullable = false, unique = true)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(name = "area_of_specialization")
     private String specialization;
-    private String location;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "location_id")
+    private Location location;
+    @ElementCollection
+    @CollectionTable(name = "therapist_languages", joinColumns = @JoinColumn(name = "therapist_id"))
+    @Column(name = "language")
     private List<String> languages;
+    @Column(name = "average_rating")
     private double rating;
+    @Column(name = "session_cost")
     private double sessionCost;
+    @Column(name = "profile_picture_url")
     private String profilePicture;
+    @Column(name = "biography", columnDefinition = "TEXT")
     private String bio;
+    @Column(name = "is_verified")
     private boolean isVerified;
 
     public Therapist() {
     }
 
-    public Therapist(String id, String name, String specialization, String location, List<String> languages, 
+    public Therapist(Long id, User user, String specialization, Location location, List<String> languages,
                     double rating, double sessionCost, String profilePicture, String bio, boolean isVerified) {
         this.id = id;
-        this.name = name;
+        this.user= user;
         this.specialization = specialization;
         this.location = location;
         this.languages = languages;
@@ -31,20 +54,20 @@ public class Therapist {
         this.isVerified = isVerified;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public User getUser() {
+        return user;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getSpecialization() {
@@ -55,11 +78,11 @@ public class Therapist {
         this.specialization = specialization;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 

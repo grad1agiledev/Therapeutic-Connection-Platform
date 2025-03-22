@@ -24,22 +24,22 @@ public class TherapistController {
     public ResponseEntity<List<Therapist>> getAllTherapists() {
         return ResponseEntity.ok(therapistService.getAllTherapists());
     }
+//
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
+//        Therapist therapist = therapistService.getTherapistById(id);
+//        if (therapist != null) {
+//            return ResponseEntity.ok(therapist);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+ //   }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
-        Therapist therapist = therapistService.getTherapistById(id);
-        if (therapist != null) {
-            return ResponseEntity.ok(therapist);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<Therapist>> searchTherapists(
-            @RequestParam(required = false) String specialization,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) List<String> languages) {
-        return ResponseEntity.ok(therapistService.searchTherapists(specialization, location, languages));
-    }
+//    @GetMapping("/search")
+//    public ResponseEntity<List<Therapist>> searchTherapists(
+//            @RequestParam(required = false) String specialization,
+//            @RequestParam(required = false) String location,
+//            @RequestParam(required = false) List<String> languages) {
+//        return ResponseEntity.ok(therapistService.searchTherapists(specialization, location, languages));
+//    }
 } 
