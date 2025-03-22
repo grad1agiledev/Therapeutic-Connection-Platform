@@ -9,10 +9,14 @@ The CS 576 term project of G-1 group.
 cp .env.example .env
 ```
 
-2. Update the `.env` file with your Stripe credentials:
+2. Update the `.env` file with your credentials:
 ```properties
+# Stripe Configuration
 STRIPE_API_KEY=your_stripe_api_key_here
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
+
+# Firebase Configuration
+FIREBASE_CONFIG_FILE_PATH=path_to_your_firebase_config_json
 ```
 
 ## Test Cards
@@ -36,6 +40,8 @@ All endpoints use JSON for requests and responses.
 
 ## Security Notes
 
-- Never commit the `.env` file to version control
+- Never commit the `.env` file or Firebase configuration JSON to version control
 - Always use environment variables for sensitive credentials
-- Keep your Stripe API keys secure and rotate them if compromised
+- Keep your API keys and service account files secure
+- Store Firebase configuration JSON in a secure location
+- Rotate credentials if they are compromised
