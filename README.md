@@ -8,6 +8,7 @@
 - Yönetici paneli ile yorum onaylama/reddetme
 - Randevu sistemi
 - Ödeme entegrasyonu
+- Güvenli oturum notları sistemi
 
 ## Kurulum
 
@@ -98,3 +99,7 @@ All endpoints use JSON for requests and responses.
 - Keep your API keys and service account files secure
 - Store Firebase configuration JSON in a secure location
 - Rotate credentials if they are compromised
+
+## Güvenli Oturum Notları Sistemi
+
+Terapistlerin oturum notlarını güvenli bir şekilde şifreleyerek saklamalarını sağlayan sistem. Detaylı bilgi için [secure_notes/README.md](secure_notes/README.md) dosyasını inceleyebilirsiniz.
