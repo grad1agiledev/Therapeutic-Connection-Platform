@@ -1,6 +1,59 @@
-# Therapeutic-Connection-Platform
+# Therapeutic Connection Platform
 
-The CS 576 term project of G-1 group.
+## Özellikler
+
+- Terapist profillerini görüntüleme
+- Terapist arama ve filtreleme
+- Hasta yorumları ve değerlendirmeleri
+- Yönetici paneli ile yorum onaylama/reddetme
+- Randevu sistemi
+- Ödeme entegrasyonu
+
+## Kurulum
+
+1. Projeyi klonlayın:
+```bash
+git clone https://github.com/yourusername/Therapeutic-Connection-Platform.git
+```
+
+2. Backend'i başlatın:
+```bash
+cd Therapeutic-Connection-Platform
+./mvnw spring-boot:run
+```
+
+3. Frontend'i başlatın:
+```bash
+cd ui_react_therapeutic_platform
+npm install
+npm start
+```
+
+## Yönetici Paneli
+
+Yönetici paneli, hasta yorumlarını yönetmek için kullanılır. Yöneticiler:
+
+- Onay bekleyen yorumları görüntüleyebilir
+- Yorumları onaylayabilir veya reddedebilir
+- Yorumlara açıklama ekleyebilir
+
+Yönetici paneline erişmek için:
+1. Ana sayfadaki "Yorum Yönetimi" linkine tıklayın
+2. Onay bekleyen yorumları görüntüleyin
+3. Her yorum için "Onayla" veya "Reddet" seçeneğini kullanın
+4. İsteğe bağlı olarak yönetici yorumu ekleyin
+
+## Teknolojiler
+
+- Backend: Spring Boot
+- Frontend: React.js
+- Veritabanı: PostgreSQL
+- Ödeme: Stripe API
+- Stil: CSS
+
+## Lisans
+
+MIT
 
 ## Environment Setup
 
