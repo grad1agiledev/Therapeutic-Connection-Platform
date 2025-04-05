@@ -1,19 +1,7 @@
-/* Ensure the video conference container takes up full space */
 .video-conference-container {
-    position: absolute;
-    top: 100px; /* Adjust based on navbar height */
-    left: 0;
-    right: 0;
-    bottom: 75px;
+    flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000; /* Optional: makes it look cleaner */
-}
-
-/* Style the iframe to fill the available space */
-.video-conference-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
+    flex-direction: column;
+    background-color: red;
+  }
+  
