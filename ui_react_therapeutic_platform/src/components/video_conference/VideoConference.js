@@ -7,11 +7,10 @@ const VideoConference = ({ userId }) => {
 
     return (
         <div className="video-conference-container">
-            <div className="video-conference">
                 <JitsiMeeting
                     roomName = "therapeutic-connection-platform"
+                    getIFrameRef = { (iframeRef) => { iframeRef.className = 'jitsi-meeting-iframe'; } }
                 /> 
-            </div>
         </div>
     );
 };
