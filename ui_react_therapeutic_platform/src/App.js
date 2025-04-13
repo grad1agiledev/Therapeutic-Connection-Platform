@@ -34,7 +34,7 @@ function App() {
 
       
       <footer className="app-footer">
-        <p>&copy; 2023 Therapeutic Connection Platform. All rights reserved.</p>
+        <p>&copy; 2025 Therapeutic Connection Platform. All rights reserved.</p>
       </footer>
     </div>
 

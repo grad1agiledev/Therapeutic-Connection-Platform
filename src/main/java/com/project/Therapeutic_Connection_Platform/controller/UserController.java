@@ -20,11 +20,11 @@ public UserController(UserRepository usersRepository)
 }
 
 
-    @PostMapping("/register")
+ /*   @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         usersRepository.save(user);
         return ResponseEntity.ok("User registered successfully.");
-    }
+    } */
 
     @GetMapping("/users/{uid}")
     public ResponseEntity<User> getUserByUid(@PathVariable String uid) {
