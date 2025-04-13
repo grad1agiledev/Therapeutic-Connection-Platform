@@ -2,7 +2,9 @@ package com.project.Therapeutic_Connection_Platform.service;
 
 import com.google.api.client.util.Value;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.TherapistRepository;
+import com.project.Therapeutic_Connection_Platform.jpaRepos.UserRepository;
 import com.project.Therapeutic_Connection_Platform.model.Therapist;
+import com.project.Therapeutic_Connection_Platform.model.User;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 public class TherapistService {
 
     private final TherapistRepository therapistRepository;
+    @Autowired
+    private UserRepository userRepository;
     // In a real application, this data would come from a database
     private final List<Therapist> therapists = new ArrayList<>();
    // private final RestTemplate restTemplate;
@@ -43,6 +47,15 @@ public class TherapistService {
 
     public List<Therapist> getAllTherapists() {
         return therapistRepository.findAll();
+    }
+
+
+    public Therapist getTherapistByFirebaseUid(String firebaseUid) {
+        User user = userRepository.findByFirebaseUid(firebaseUid);
+        if (user == null || !"therapist".equalsIgnoreCase(user.getRole())) {
+            return null;
+        }
+        return therapistRepository.findByUser(user);
     }
 
 //    public TherapistService() {

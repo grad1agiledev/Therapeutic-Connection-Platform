@@ -1,15 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { auth,db } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
 
+  const navigate = useNavigate();
+  const [name,setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [role, setRole] = useState('patient');
+
+  const [locations, setLocations] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    fetch('http://localhost:8080/api/locations')
+      .then(res => res.json())
+      .then(data => {
+        setLocations(data);
+        if(data.length > 0) {
+          setSelectedLocation(data[0].id);
+        }
+      })
+      .catch(error => console.error("Error fetching locations:", error));
+  }, []);
 
   const handleRegister = async (e) =>
   {
@@ -18,7 +35,7 @@ function Register() {
         const userInfos = await createUserWithEmailAndPassword(auth, email, password);
         const token = await userInfos.user.getIdToken();
         const user = userInfos.user;
-        const uid = user.uid;
+        const uid = userInfos.user.uid;
 
 //
 //        await setDoc(doc(db,"Users",uid),
@@ -43,13 +60,21 @@ function Register() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   uid :uid,
+                  name: name,
                   phone: phone,
-                  address: address,
+                  locationId: selectedLocation,
                   role: role,
+                  email:email,
                 }),
               });
 
               alert('Registration is successful!');
+
+               if (role === "therapist") {
+                      navigate('/therapist-profile');
+                    } else {
+                      navigate('/');
+                    }
          } catch (error) {
                     console.error('Registration error is: ', error);
                     alert('Registration failed bc: ' + error.message);
@@ -72,6 +97,12 @@ function Register() {
     <div>
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
+       <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              /><br/>
         <input
           type="email"
           placeholder="Email"
@@ -90,14 +121,27 @@ function Register() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         /><br/>
-        <input
-          type="text"
-          placeholder="Address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        /><br/>
+         {/* <input
+                  type="text"
+                  placeholder="Address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                /><br/> */}
 
 
+        <label htmlFor="locationSelect">Location:</label>
+         <select
+           id="locationSelect"
+           value={selectedLocation}
+           onChange={(e) => setSelectedLocation(e.target.value)}
+         >
+           {locations.map(loc => (
+             <option key={loc.id} value={loc.id}>
+               {loc.name}, {loc.country}
+             </option>
+           ))}
+         </select>
+         <br/>
 
         <label>
                   <input type="radio" value="patient" checked={role === "patient"} onChange={(e) => setRole(e.target.value)} />
