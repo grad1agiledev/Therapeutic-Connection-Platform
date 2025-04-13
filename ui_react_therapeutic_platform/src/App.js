@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import TherapistList from './components/therapist/TherapistList';
 import Register from './Registration/Register'
+import Login from './Login/Login';
 import ReviewManagement from './components/admin/ReviewManagement';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
                <Routes>
                  <Route path="/" element={<TherapistList />} />
                  <Route path="/register" element={<Register />} />
+                 <Route path="/login" element={<Login />} />
                  <Route path="/admin/reviews" element={<ReviewManagement />} />
                </Routes>
              </main>
