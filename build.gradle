@@ -29,6 +29,7 @@ dependencies {
 	implementation 'com.stripe:stripe-java:23.0.0'
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation 'mysql:mysql-connector-java:8.0.20'
+	implementation 'io.github.cdimascio:dotenv-java:3.2.0'
 	//implementation 'org.postgresql:postgresql'
 	//implementation 'javax.persistence:javax.persistence-api:2.2'
 
