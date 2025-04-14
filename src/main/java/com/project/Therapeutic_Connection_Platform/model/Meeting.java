@@ -13,6 +13,21 @@ public class Meeting {
         this.meetingPassword = meetingPassword;
         this.userIds = userIds;
     }
+    public Meeting(Long id, List<Long> userIds) {
+        this.id = id;
+        //name consists of the user ids and the meeting id. 
+
+        StringBuilder nameBuilder = new StringBuilder();
+
+        nameBuilder.append("Session ");
+        for (Long userId : userIds) {
+            nameBuilder.append(userId);
+        }
+        nameBuilder.append(id);
+        this.meetingName = nameBuilder.toString();
+        this.meetingPassword = "";
+        this.userIds = userIds;
+    }
 
     //getters and setters
     public Long getId() {

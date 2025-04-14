@@ -20,4 +20,10 @@ public class MeetingController {
         List<Meeting> meetings = meetingService.getMeetings(userId);
         return ResponseEntity.ok(meetings);
     }
+
+    @GetMapping("/{meetingId}")
+    public ResponseEntity<Meeting> getMeeting(@PathVariable Long meetingId) {
+        Meeting meeting = meetingService.getMeeting(meetingId);
+        return ResponseEntity.ok(meeting);
+    }
 }

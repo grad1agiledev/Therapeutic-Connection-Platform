@@ -8,7 +8,7 @@ function App() {
   const [isVideoConferenceActive, setIsVideoConferenceActive] = useState(false);
   const isDevelopment = process.env.REACT_APP_ENV === 'development';
   //TODO: Replace this with the actual user ID of the logged in user
-  const currentUserId = "1";
+  const meetingID = "1";
   
   const handleStartVideoConference = () => {
     // Toggle video conference state
@@ -34,7 +34,7 @@ function App() {
       
       <main className="app-main">
       {isVideoConferenceActive ? (
-          <VideoConference userId={currentUserId} />
+          <VideoConference meetingID={meetingID} />
         ) : (
           <TherapistList />
         )}
