@@ -1,49 +1,47 @@
-import React, {useState} from 'react';
+import React , { useState } from 'react';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import TherapistList from './components/therapist/TherapistList';
-import VideoConference from './components/video_conference/VideoConference';
+import Register from './Registration/Register'
+import Login from './Login/Login';
+import ReviewManagement from './components/admin/ReviewManagement';
 
 function App() {
 
-  const [isVideoConferenceActive, setIsVideoConferenceActive] = useState(false);
-  const isDevelopment = process.env.REACT_APP_ENV === 'development';
-  //TODO: Replace this with the actual user ID of the logged in user
-  const meetingID = "1";
-  
-  const handleStartVideoConference = () => {
-    // Toggle video conference state
-    setIsVideoConferenceActive(!isVideoConferenceActive);
-  };
-  
+//const [showRegister, setShowRegister] = useState(false);
+
   return (
+  <Router>
     <div className="app-container">
       <header className="app-header">
         <h1>Therapeutic Connection Platform</h1>
         <nav className="app-nav">
-          <button className="nav-button">Home</button>
-          <button className="nav-button active">Therapists</button>
-          <button className="nav-button">About Us</button>
-          <button className="nav-button login">Login</button>
-          <button className="nav-button register">Register</button>
-          {/* TODO: Remove this button after real implementation */}
-          {isDevelopment && (
-          <button className="nav-button" onClick={handleStartVideoConference}>Start Video Conference</button>
-          )}
+          <Link to="/" className="nav-button">Home</Link>
+          <Link to="/therapists" className="nav-button">Therapists</Link>
+          <Link to="/about" className="nav-button">About Us</Link>
+          <Link to="/login" className="nav-button login">Login</Link>
+          <Link to="/register" className="nav-button register">Register</Link>
+          <Link to="/admin/reviews" className="nav-button">Review Management</Link>
         </nav>
       </header>
-      
-      <main className="app-main">
-      {isVideoConferenceActive ? (
-          <VideoConference meetingID={meetingID} />
-        ) : (
-          <TherapistList />
-        )}
-      </main>
+
+     <main className="app-main">
+               <Routes>
+                 <Route path="/" element={<TherapistList />} />
+                 <Route path="/register" element={<Register />} />
+                 <Route path="/login" element={<Login />} />
+                 <Route path="/admin/reviews" element={<ReviewManagement />} />
+               </Routes>
+             </main>
+
       
       <footer className="app-footer">
         <p>&copy; 2025 Therapeutic Connection Platform. All rights reserved.</p>
       </footer>
     </div>
+
+</Router>
+
   );
 }
 
