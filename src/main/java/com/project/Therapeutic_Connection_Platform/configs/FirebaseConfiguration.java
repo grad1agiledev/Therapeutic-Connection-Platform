@@ -1,4 +1,4 @@
-package com.project.Therapeutic_Connection_Platform;
+package com.project.Therapeutic_Connection_Platform.configs;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -12,10 +12,9 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Configuration
-@ConditionalOnProperty(name = "firebase.enabled", havingValue = "true", matchIfMissing = false)
 public class FirebaseConfiguration {
 
-    @Value("${FIREBASE_CONFIG_FILE_PATH:src/main/resources/firebase-config.json}")
+    @Value("${FIREBASE_CONFIG_FILE_PATH}")
     private String firebaseConfigFilePath;
 
     @PostConstruct

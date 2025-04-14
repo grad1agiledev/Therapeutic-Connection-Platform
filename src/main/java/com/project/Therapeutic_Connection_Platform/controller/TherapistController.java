@@ -1,6 +1,7 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
 import com.project.Therapeutic_Connection_Platform.model.Therapist;
+import com.project.Therapeutic_Connection_Platform.model.User;
 import com.project.Therapeutic_Connection_Platform.service.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,21 +26,31 @@ public class TherapistController {
         return ResponseEntity.ok(therapistService.getAllTherapists());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
-        Therapist therapist = therapistService.getTherapistById(id);
-        if (therapist != null) {
-            return ResponseEntity.ok(therapist);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<Therapist>> searchTherapists(
-            @RequestParam(required = false) String specialization,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) List<String> languages) {
-        return ResponseEntity.ok(therapistService.searchTherapists(specialization, location, languages));
+    @GetMapping("/by-uid/{uid}")
+    public ResponseEntity<?> getTherapistByUid(@PathVariable String uid) {
+        Therapist therapist = therapistService.getTherapistByFirebaseUid(uid);
+        if (therapist == null) {
+            return ResponseEntity.badRequest().body("User not found or user is not a therapist.");
+        }
+        return ResponseEntity.ok(therapist);
     }
-} 
+}
+//
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
+//        Therapist therapist = therapistService.getTherapistById(id);
+//        if (therapist != null) {
+//            return ResponseEntity.ok(therapist);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+ //   }
+
+//    @GetMapping("/search")
+//    public ResponseEntity<List<Therapist>> searchTherapists(
+//            @RequestParam(required = false) String specialization,
+//            @RequestParam(required = false) String location,
+//            @RequestParam(required = false) List<String> languages) {
+//        return ResponseEntity.ok(therapistService.searchTherapists(specialization, location, languages));
+//    }
