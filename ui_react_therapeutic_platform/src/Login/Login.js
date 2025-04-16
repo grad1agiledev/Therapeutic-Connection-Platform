@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState , useContext} from 'react';
 import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+//import { UserContext } from './UserContext';
 
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,7 +16,7 @@ function Login() {
       const userInfos = await signInWithEmailAndPassword(auth, email, password);
       console.log('User logged in:', userInfos.user);
       alert('Login successful!');
-      navigate('/');
+      navigate('/profile');
     } catch (error) {
       console.error('Login error:', error.message);
       alert('Login failed: ' + error.message);
@@ -22,7 +24,7 @@ function Login() {
   };
 
   return (
-      <div>
+      <div style={{ padding: '1rem' }}>
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
           <input
@@ -30,6 +32,7 @@ function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            style={{ marginBottom: '10px' }}
           /><br/>
           <input
             type="password"
