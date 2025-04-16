@@ -14,7 +14,7 @@ function Register() {
 
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('patient');
 
   useEffect(() => {
     fetch('http://localhost:8080/api/locations')
@@ -37,24 +37,6 @@ function Register() {
         const user = userInfos.user;
         const uid = userInfos.user.uid;
 
-//
-//        await setDoc(doc(db,"Users",uid),
-//        {
-//        email: email,
-//        phone : phone,
-//        address : address,
-//        role: role,
-//        createdAt : new Date()
-//        });
-//
-//        alert('Registration is successful!');
-//         }
-//  catch (error) {
-//              console.error('Registration error is:', error);
-//              alert('Registration failed bc: ' + error.message);
-//            }
-//          };
-
         await fetch('http://localhost:8080/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -71,9 +53,9 @@ function Register() {
               alert('Registration is successful!');
 
                if (role === "therapist") {
-                      navigate('/therapist-profile');
+                      navigate('/profile');
                     } else {
-                      navigate('/');
+                      navigate('/profile');
                     }
          } catch (error) {
                     console.error('Registration error is: ', error);
