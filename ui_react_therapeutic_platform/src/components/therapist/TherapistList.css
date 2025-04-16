@@ -55,6 +55,54 @@ h1 {
   color: #6c757d;
 }
 
+.therapist-card {
+  height: 100%;
+  transition: transform 0.2s;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.therapist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.therapist-card .card-title {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.therapist-card .card-subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.therapist-info {
+  margin-bottom: 15px;
+}
+
+.therapist-info p {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.therapist-availability {
+  margin-bottom: 15px;
+}
+
+.therapist-availability .badge {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  margin-right: 5px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 8px 0;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .therapist-grid {
     grid-template-columns: 1fr;
@@ -62,5 +110,9 @@ h1 {
   
   .therapist-list-container {
     padding: 10px;
+  }
+  
+  .therapist-card {
+    margin-bottom: 20px;
   }
 } 
