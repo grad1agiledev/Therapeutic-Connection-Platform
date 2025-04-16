@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TherapistDetail.css';
 import { Link } from 'react-router-dom';
+import ApprovedReviews from './ApprovedReviews';
 //import Register from '././Registration/Register';
 
 const TherapistDetail = ({ therapistId, onBack }) => {
@@ -92,6 +93,8 @@ const TherapistDetail = ({ therapistId, onBack }) => {
         <h2>About</h2>
         <p className="therapist-detail-bio">{therapist.bio}</p>
       </div>
+
+      <ApprovedReviews therapistId={therapistId} />
       
       <div className="therapist-detail-actions">
         <button className="detail-action-button book-appointment" disabled>
