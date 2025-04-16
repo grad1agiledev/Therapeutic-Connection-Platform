@@ -5,43 +5,48 @@ import TherapistList from './components/therapist/TherapistList';
 import Register from './Registration/Register'
 import Login from './Login/Login';
 import ReviewManagement from './components/admin/ReviewManagement';
+import Profile from './ProfileManagement/Profile';
+import NavBar from './NavBar';
+import { AuthProvider } from './ProfileManagement/UserContext';
+
+
+function AboutUs() {
+  return (
+    <div>
+      <h2>About Us</h2>
+      <p>This is the Therapeutic Connection Platform.</p>
+    </div>
+  );
+}
 
 function App() {
-
-//const [showRegister, setShowRegister] = useState(false);
-
   return (
-  <Router>
-    <div className="app-container">
-      <header className="app-header">
-        <h1>Therapeutic Connection Platform</h1>
-        <nav className="app-nav">
-          <Link to="/" className="nav-button">Home</Link>
-          <Link to="/therapists" className="nav-button">Therapists</Link>
-          <Link to="/about" className="nav-button">About Us</Link>
-          <Link to="/login" className="nav-button login">Login</Link>
-          <Link to="/register" className="nav-button register">Register</Link>
-          <Link to="/admin/reviews" className="nav-button">Review Management</Link>
-        </nav>
-      </header>
+    <Router>
+      <AuthProvider>
+        <div className="app-container">
+          <header className="app-header">
+            <h1>Therapeutic Connection Platform</h1>
+            <NavBar />
+          </header>
 
-     <main className="app-main">
-               <Routes>
-                 <Route path="/" element={<TherapistList />} />
-                 <Route path="/register" element={<Register />} />
-                 <Route path="/login" element={<Login />} />
-                 <Route path="/admin/reviews" element={<ReviewManagement />} />
-               </Routes>
-             </main>
+          <main className="app-main">
+            <Routes>
+              <Route path="/" element={<TherapistList />} />
+              <Route path="/therapists" element={<TherapistList />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/admin/reviews" element={<ReviewManagement />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </main>
 
-      
-      <footer className="app-footer">
-        <p>&copy; 2025 Therapeutic Connection Platform. All rights reserved.</p>
-      </footer>
-    </div>
-
-</Router>
-
+          <footer className="app-footer">
+            <p>&copy; 2025 Therapeutic Connection Platform. All rights reserved.</p>
+          </footer>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 

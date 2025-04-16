@@ -163,4 +163,10 @@ public class TherapistService {
 //        Therapist[] searchTherapistsList= restTemplate.getForObject(url, Therapist[].class);
 //        return Arrays.asList(searchTherapistsList);
 //    }
+
+    public Therapist saveTherapist(Therapist therapist) {
+        return therapistRepository.save(therapist);
+    }
+
+
 } 
