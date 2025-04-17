@@ -31,6 +31,10 @@ function Register() {
   const handleRegister = async (e) =>
   {
    e.preventDefault();
+   if (password.length < 8) {
+    alert('Password must be at least 8 characters long');
+    return;
+  }
   try {
         const userInfos = await createUserWithEmailAndPassword(auth, email, password);
         const token = await userInfos.user.getIdToken();
@@ -95,6 +99,7 @@ function Register() {
           type="password"
           placeholder="Password"
           value={password}
+          minLength={8}
           onChange={(e) => setPassword(e.target.value)}
         /><br/>
         <input
