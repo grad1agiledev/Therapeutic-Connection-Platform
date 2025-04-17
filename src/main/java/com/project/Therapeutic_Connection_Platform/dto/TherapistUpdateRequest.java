@@ -11,4 +11,5 @@ public class TherapistUpdateRequest {
     public List<String> languages;
     public Long locationId;
     public String profilePicture;
+    public List<Long> languageIds;
 }

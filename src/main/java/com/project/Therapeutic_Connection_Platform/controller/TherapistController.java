@@ -1,7 +1,9 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
 import com.project.Therapeutic_Connection_Platform.dto.TherapistUpdateRequest;
+import com.project.Therapeutic_Connection_Platform.jpaRepos.LanguageRepository;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.LocationRepository;
+import com.project.Therapeutic_Connection_Platform.model.Language;
 import com.project.Therapeutic_Connection_Platform.model.Location;
 import com.project.Therapeutic_Connection_Platform.model.Therapist;
 import com.project.Therapeutic_Connection_Platform.model.User;
@@ -38,6 +40,8 @@ public class TherapistController {
 
     private final TherapistService therapistService;
     private final LocationRepository locationRepo;
+
+    @Autowired private LanguageRepository languageRepo;
     @Autowired
     public TherapistController(TherapistService therapistService,LocationRepository locationRepository) {
         this.therapistService = therapistService;
@@ -96,13 +100,16 @@ public class TherapistController {
         therapist.setSpecialization(req.specialization);
         therapist.setBio(req.bio);
         therapist.setSessionCost(req.sessionCost);
-        therapist.setLanguages(req.languages);
+       // therapist.setLanguages(req.languages);
         Location loc = locationRepo.findById(req.locationId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "Invalid locationId"
                 ));
         therapist.setLocation(loc);
 
+
+        List<Language> langs = languageRepo.findAllById(req.languageIds);
+        therapist.setLanguages(langs);
         therapist.setProfilePicture(req.profilePicture);
         therapistService.saveTherapist(therapist);
         return ResponseEntity.ok().build();
@@ -134,5 +141,4 @@ public class TherapistController {
 
         return ResponseEntity.ok(Map.of("url", url));
     }
-
 }
