@@ -1,5 +1,6 @@
 package com.project.Therapeutic_Connection_Platform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -23,10 +24,15 @@ public class Therapist {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id")
     private Location location;
-    @ElementCollection
-    @CollectionTable(name = "therapist_languages", joinColumns = @JoinColumn(name = "therapist_id"))
-    @Column(name = "language")
-    private List<String> languages;
+
+    @ManyToMany
+    @JoinTable(
+            name = "therapist_languages",
+            joinColumns = @JoinColumn(name = "therapist_id"),
+            inverseJoinColumns = @JoinColumn(name = "language_id")
+    )
+    @JsonIgnoreProperties("therapists")
+    private List<Language> languages;
     @Column(name = "average_rating")
     private double rating;
     @Column(name = "session_cost")
@@ -41,7 +47,7 @@ public class Therapist {
     public Therapist() {
     }
 
-    public Therapist(Long id, User user, String specialization, Location location, List<String> languages,
+    public Therapist(Long id, User user, String specialization, Location location, List<Language> languages,
                     double rating, double sessionCost, String profilePicture, String bio, boolean isVerified) {
         this.id = id;
         this.user= user;
@@ -87,11 +93,11 @@ public class Therapist {
         this.location = location;
     }
 
-    public List<String> getLanguages() {
+    public List<Language> getLanguages() {
         return languages;
     }
 
-    public void setLanguages(List<String> languages) {
+    public void setLanguages(List<Language> languages) {
         this.languages = languages;
     }
 
