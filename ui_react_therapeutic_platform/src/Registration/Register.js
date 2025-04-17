@@ -31,11 +31,33 @@ function Register() {
   const handleRegister = async (e) =>
   {
    e.preventDefault();
+   
    if (password.length < 8) {
     alert('Password must be at least 8 characters long');
     return;
-  }
-  try {
+   }
+   
+   if (!/[A-Z]/.test(password)) {
+    alert('Password must contain at least one uppercase letter');
+    return;
+   }
+   
+   if (!/[a-z]/.test(password)) {
+    alert('Password must contain at least one lowercase letter');
+    return;
+   }
+   
+   if (!/[0-9]/.test(password)) {
+    alert('Password must contain at least one number');
+    return;
+   }
+   
+   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    alert('Password must contain at least one special character');
+    return;
+   }
+   
+   try {
         const userInfos = await createUserWithEmailAndPassword(auth, email, password);
         const token = await userInfos.user.getIdToken();
         const user = userInfos.user;
