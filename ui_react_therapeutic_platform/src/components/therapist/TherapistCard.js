@@ -4,6 +4,8 @@ import './TherapistCard.css';
 const TherapistCard = ({ therapist, onViewProfile }) => {
   const [showDetails, setShowDetails] = useState(false);
 
+  const rating      = Number(therapist.rating      ?? 0);
+  const sessionCost = Number(therapist.sessionCost ?? 0);
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
@@ -41,7 +43,9 @@ const TherapistCard = ({ therapist, onViewProfile }) => {
           <strong>Location:</strong> {therapist.location.name},{therapist.location.country}
         </div>
         <div className="therapist-languages">
-          <strong>Languages:</strong> {therapist.languages && therapist.languages.length > 0 ? therapist.languages.join(', ') : 'Not specified'}
+          <strong>Languages:</strong> {''}{Array.isArray(therapist.languages) && therapist.languages.length
+                                        ? therapist.languages.map(l => l.langName).join(', ')
+                                        : 'Not specified'}
         </div>
 
         <div className="therapist-session-cost">
