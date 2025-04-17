@@ -22,23 +22,28 @@ export default function Profile() {
   const [file, setFile]                         = useState(null);
   const [previewUrl, setPreviewUrl]             = useState('');
 
+  const [languages, setLanguages]       = useState([]);
+  const [languageIds, setLanguageIds]   = useState([]);
+
   useEffect(() => {
     if (!currentUser) return;
 
     Promise.all([
-      fetch(`http://localhost:8080/api/users/${currentUser.uid}`).then(r => r.json()),
-      fetch('http://localhost:8080/api/locations').then(r => r.json())
-    ])
-    .then(([userData, locs]) => {
+        fetch(`http://localhost:8080/api/users/${currentUser.uid}`).then(r => r.json()),
+        fetch('http://localhost:8080/api/locations').then(r => r.json()),
+        fetch('http://localhost:8080/api/languages').then(r => r.json())
+      ])
+    .then(([userData, locs,langs]) => {
       setFullName(userData.fullName);
       setPhone(userData.phone);
       setAddress(userData.address || '');
-      setAddress(userData.address || '');
+
       setLocId(
           locs.find(l => `${l.name}, ${l.country}` === userData.address)?.id || ''
           );
 
       setLocations(locs);
+      setLanguages(langs);
 
       if (userRole === 'therapist') {
         fetch(`http://localhost:8080/api/therapists/${currentUser.uid}`)
@@ -50,6 +55,7 @@ export default function Profile() {
             setBio(th.bio || '');
             setSessionCost(th.sessionCost || 0);
             setPreviewUrl(th.profilePicture || '');
+            setLanguageIds(th.languages?.map(l => l.id) || []);
           });
       }
     })
@@ -110,7 +116,8 @@ export default function Profile() {
           bio,
           sessionCost,
           locationId: locId,
-          profilePicture: picUrl
+          profilePicture: picUrl,
+          languageIds
         };
         const res2 = await fetch(
           `http://localhost:8080/api/therapists/${currentUser.uid}`,
@@ -205,6 +212,26 @@ export default function Profile() {
             />
           </label>
           <br/><br/>
+
+         <label>
+           Languages (Ctrl click for multiple)<br/>
+           <select
+             multiple
+             value={languageIds}
+             onChange={e => {
+               const opts = Array.from(e.target.selectedOptions, o => parseInt(o.value,10));
+               setLanguageIds(opts);
+             }}
+             style={{ height: 90 }}
+           >
+             {languages.map(lang => (
+                  <option key={lang.id} value={lang.id}>
+             +      {lang.langName}
+                  </option>
+                ))}
+           </select>
+         </label>
+         <br/><br/>
 
           <label>
             Session Cost (USD)<br/>
