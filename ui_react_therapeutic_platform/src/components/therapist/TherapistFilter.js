@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import './TherapistFilter.css';
 
-const TherapistFilter = ({ onFilter }) => {
+const TherapistFilter = ({ onFilterChange }) => {
   const [filters, setFilters] = useState({
     specialization: '',
     location: '',
@@ -28,7 +28,7 @@ const TherapistFilter = ({ onFilter }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onFilter(filters);
+    onFilterChange(filters);
   };
 
   return (
