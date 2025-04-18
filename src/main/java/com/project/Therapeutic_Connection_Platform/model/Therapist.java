@@ -1,6 +1,7 @@
 package com.project.Therapeutic_Connection_Platform.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.project.Therapeutic_Connection_Platform.modelEnums.VerificationState;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -44,11 +45,26 @@ public class Therapist {
     @Column(name = "is_verified")
     private boolean isVerified;
 
+    @Column(name="licence_number")
+    private String licenceNumber;
+
+    @Column(name="licence_document")
+    private String licenceDocument;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="verification_state")
+    private VerificationState verificationState = VerificationState.UNVERIFIED;
+
+    @Column(name="verification_notes")
+    private String verificationNotes;
+
+
     public Therapist() {
     }
 
     public Therapist(Long id, User user, String specialization, Location location, List<Language> languages,
-                    double rating, double sessionCost, String profilePicture, String bio, boolean isVerified) {
+                    double rating, double sessionCost, String profilePicture, String bio, boolean isVerified, String licenceNumber,String licenceDocument,
+                     VerificationState verificationState,String verificationNotes) {
         this.id = id;
         this.user= user;
         this.specialization = specialization;
@@ -59,6 +75,10 @@ public class Therapist {
         this.profilePicture = profilePicture;
         this.bio = bio;
         this.isVerified = isVerified;
+        this.setLicenceNumber(licenceNumber);
+        this.setLicenceDocument(licenceDocument);
+        this.setVerificationNotes(verificationNotes);
+        this.setVerificationState(verificationState);
     }
 
     public Long getId() {
@@ -140,4 +160,36 @@ public class Therapist {
     public void setVerified(boolean verified) {
         isVerified = verified;
     }
-} 
+
+    public String getLicenceNumber() {
+        return licenceNumber;
+    }
+
+    public void setLicenceNumber(String licenceNumber) {
+        this.licenceNumber = licenceNumber;
+    }
+
+    public String getLicenceDocument() {
+        return licenceDocument;
+    }
+
+    public void setLicenceDocument(String licenceDocument) {
+        this.licenceDocument = licenceDocument;
+    }
+
+    public VerificationState getVerificationState() {
+        return verificationState;
+    }
+
+    public void setVerificationState(VerificationState verificationState) {
+        this.verificationState = verificationState;
+    }
+
+    public String getVerificationNotes() {
+        return verificationNotes;
+    }
+
+    public void setVerificationNotes(String verificationNotes) {
+        this.verificationNotes = verificationNotes;
+    }
+}

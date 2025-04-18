@@ -1,12 +1,14 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
 import com.project.Therapeutic_Connection_Platform.dto.TherapistUpdateRequest;
+import com.project.Therapeutic_Connection_Platform.dto.VerificationRequest;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.LanguageRepository;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.LocationRepository;
 import com.project.Therapeutic_Connection_Platform.model.Language;
 import com.project.Therapeutic_Connection_Platform.model.Location;
 import com.project.Therapeutic_Connection_Platform.model.Therapist;
 import com.project.Therapeutic_Connection_Platform.model.User;
+import com.project.Therapeutic_Connection_Platform.modelEnums.VerificationState;
 import com.project.Therapeutic_Connection_Platform.service.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,27 +65,8 @@ public class TherapistController {
         return ResponseEntity.ok(therapist);
     }
 
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
-//        Therapist therapist = therapistService.getTherapistById(id);
-//        if (therapist != null) {
-//            return ResponseEntity.ok(therapist);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
- //   }
-
-//    @GetMapping("/search")
-//    public ResponseEntity<List<Therapist>> searchTherapists(
-//            @RequestParam(required = false) String specialization,
-//            @RequestParam(required = false) String location,
-//            @RequestParam(required = false) List<String> languages) {
-//        return ResponseEntity.ok(therapistService.searchTherapists(specialization, location, languages));
-//    }
-
     /*
-    Updating the therapists if accessed a request
+    Updating the all therapists info if accessed a request
      */
     @PutMapping("/{uid}")
     public ResponseEntity<?> updateTherapist(
@@ -116,6 +99,9 @@ public class TherapistController {
     }
 
 
+    /*
+    recording the uploading photo to the DB
+     */
     @PostMapping(path = "/{uid}/uploadPhoto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String,String>> uploadPhoto(
             @PathVariable String uid,
@@ -141,4 +127,49 @@ public class TherapistController {
 
         return ResponseEntity.ok(Map.of("url", url));
     }
+
+    /*
+    setting verification infos for therapist
+     */
+    @PostMapping("/{uid}/verify")
+    public ResponseEntity<?> askForVerification(
+            @PathVariable String uid,
+            @RequestBody VerificationRequest dto) {
+
+        Therapist t = therapistService.getTherapistByFirebaseUid(uid);
+        if (t == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        t.setLicenceDocument(dto.licenceDocument);
+        t.setVerificationState(VerificationState.PENDING);
+
+        therapistService.saveTherapist(t);
+        return ResponseEntity.ok().build();
+    }
+
+    /*
+    uploading licenses endpoint
+     */
+    @PostMapping(path = "/{uid}/uploadLicence", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String,String>> uploadLicence(
+            @PathVariable String uid,
+            @RequestPart("file") MultipartFile file) throws IOException {
+
+        Therapist t = therapistService.getTherapistByFirebaseUid(uid);
+        if (t == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        Path uploadDir  = Paths.get("uploads/licences");
+        Files.createDirectories(uploadDir);
+        Path target = uploadDir.resolve(filename);
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        String url = "http://localhost:8080/uploads/licences/" + filename;
+        return ResponseEntity.ok(Map.of("url", url));
+    }
+
+
 }

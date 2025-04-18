@@ -25,6 +25,51 @@ export default function Profile() {
   const [languages, setLanguages]       = useState([]);
   const [languageIds, setLanguageIds]   = useState([]);
 
+  const [licenceNumber, setLicenceNumber] = useState('');
+  const [licenceFile,   setLicenceFile]   = useState(null);
+  const [verifyBusy,     setVerifyBusy]     = useState(false);
+  const [verificationState, setVerificationState] = useState('UNVERIFIED');
+
+  const [licenceDocUrl, setLicenceDocUrl] = useState('');
+
+
+  //verification request for therapist
+  async function requestVerification() {
+    try {
+      setVerifyBusy(true);
+
+      let licenceUrl = '';
+      if (licenceFile) {
+        const fd = new FormData();
+        fd.append('file', licenceFile);
+        const up = await fetch(
+          `http://localhost:8080/api/therapists/${currentUser.uid}/uploadLicence`,
+          { method: 'POST', body: fd }
+        );
+        licenceUrl = (await up.json()).url;
+      }
+
+      await fetch(
+            `http://localhost:8080/api/therapists/${currentUser.uid}/verify`,
+            {
+              method : 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body   : JSON.stringify({
+                licenceDocument : licenceUrl
+              })
+            }
+          );
+
+          alert('Verification request sent!');
+          //setIsVerified(th.verificationState === 'VERIFIED');
+          setLicenceDocUrl(licenceUrl);
+        } catch (e) {
+          alert('Failed: ' + e.message);
+        } finally {
+          setVerifyBusy(false);
+        }
+      }
+
   useEffect(() => {
     if (!currentUser) return;
 
@@ -56,6 +101,9 @@ export default function Profile() {
             setSessionCost(th.sessionCost || 0);
             setPreviewUrl(th.profilePicture || '');
             setLanguageIds(th.languages?.map(l => l.id) || []);
+            //setIsVerified(Boolean(th.isVerified));
+            setVerificationState(th.verificationState);
+            setLicenceDocUrl(th.licenceDocument || '');
           });
       }
     })
@@ -133,6 +181,8 @@ export default function Profile() {
         }
       }
 
+
+
       alert('Profile updated successfully!');
     } catch (err) {
       console.error('Error in handleSubmit:', err);
@@ -186,87 +236,169 @@ export default function Profile() {
            </select>
          </label><br/><br/>
 
+         {userRole === 'therapist' && (
+           <>
+
+             {/* therapist specific fields */}
+                        <label>
+                          Specialization<br />
+                          <input
+                            type="text"
+                            value={specialization}
+                            onChange={e => setSpecialization(e.target.value)}
+                          />
+                        </label>
+                        <br />
+                        <br />
+
+                        <label>
+                          Bio<br />
+                          <textarea
+                            rows={4}
+                            value={bio}
+                            onChange={e => setBio(e.target.value)}
+                          />
+                        </label>
+                        <br />
+                        <br />
+
+                        <label>
+                          Languages (Ctrl‑click for multiple)<br />
+                          <select
+                            multiple
+                            value={languageIds}
+                            onChange={e =>
+                              setLanguageIds(
+                                Array.from(e.target.selectedOptions, o => parseInt(o.value, 10))
+                              )
+                            }
+                            style={{ height: 90 }}
+                          >
+                            {languages.map(lang => (
+                              <option key={lang.id} value={lang.id}>
+                                {lang.langName}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <br />
+                        <br />
+
+                        <label>
+                          Session Cost (USD)<br />
+                          <input
+                            type="number"
+                            step="10.0"
+                            value={sessionCost}
+                            onChange={e => setSessionCost(parseFloat(e.target.value))}
+                          />
+                        </label>
+                        <br />
+                        <br />
+
+                        <label>
+                          Profile Picture<br />
+                          {previewUrl && (
+                            <img
+                              src={previewUrl}
+                              alt="preview"
+                              width={80}
+                              style={{ display: 'block', marginBottom: 8 }}
+                            />
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => {
+                              const f = e.target.files[0];
+                              setFile(f);
+                              setPreviewUrl(URL.createObjectURL(f));
+                            }}
+                          />
+                        </label>
+                        <br />
+                        <br />
+             {/* status badge */}
+             <p
+               style={{
+                 padding: '6px 10px',
+                 borderRadius: 4,
+                 fontWeight: 600,
+                 background:
+                   verificationState === 'VERIFIED'
+                     ? '#e0ffe8'
+                     : verificationState === 'PENDING'
+                     ? '#fff6d9'
+                     : '#ffe8e8',
+                 color:
+                   verificationState === 'VERIFIED'
+                     ? 'green'
+                     : verificationState === 'PENDING'
+                     ? '#b36b00'
+                     : 'crimson'
+               }}
+             >
+               {verificationState === 'VERIFIED'
+                 ? '✔ Profile verified'
+                 : verificationState === 'PENDING'
+                 ? '⏳ Verification request pending'
+                 : '⚠️Profile not verified'}
+             </p>
+
+             {/* if not verified then show only */}
+             {verificationState === 'UNVERIFIED'  && (
+               <>
+                 <hr />
+                 <p style={{ color: 'crimson' }}>
+                   Your profile is not verified yet. Clients won’t see you in search
+                   results until an admin approves it.
+                 </p>
+
+                 <label>
+                   Upload Licence (PDF/ image)<br />
+                   <input
+                     type="file"
+                     accept=".pdf,image/*"
+                     onChange={e => setLicenceFile(e.target.files[0])}
+                   />
+                 </label>
+                 <br />
+
+                 {/* licence document link */}
+                 {licenceDocUrl &&
+                   (licenceDocUrl.toLowerCase().endsWith('.pdf') ? (
+                     <p style={{ marginTop: 6 }}>
+                       Current file:&nbsp;
+                       <a href={licenceDocUrl} target="_blank" rel="noreferrer">
+                         uploaded PDF
+                       </a>
+                     </p>
+                   ) : (
+                     <img
+                       src={licenceDocUrl}
+                       alt="Licence"
+                       width={120}
+                       style={{ display: 'block', marginTop: 8 }}
+                     />
+                   ))}
+
+                 <button
+                   type="button"
+                   disabled={verifyBusy}
+                   onClick={requestVerification}
+                   style={{ marginTop: 12 }}
+                 >
+                   {verifyBusy ? 'Sending…' : 'Verify my profile'}
+                 </button>
+                 <br />
+                 <br />
+               </>
+             )}
 
 
-      {/* Therapist only fields */}
-      {userRole === 'therapist' && (
-        <>
+           </>
+         )}
 
-
-          <label>
-            Specialization<br/>
-            <input
-              type="text"
-              value={specialization}
-              onChange={e => setSpecialization(e.target.value)}
-            />
-          </label>
-          <br/><br/>
-
-          <label>
-            Bio<br/>
-            <textarea
-              value={bio}
-              onChange={e => setBio(e.target.value)}
-              rows={4}
-            />
-          </label>
-          <br/><br/>
-
-         <label>
-           Languages (Ctrl click for multiple)<br/>
-           <select
-             multiple
-             value={languageIds}
-             onChange={e => {
-               const opts = Array.from(e.target.selectedOptions, o => parseInt(o.value,10));
-               setLanguageIds(opts);
-             }}
-             style={{ height: 90 }}
-           >
-             {languages.map(lang => (
-                  <option key={lang.id} value={lang.id}>
-             +      {lang.langName}
-                  </option>
-                ))}
-           </select>
-         </label>
-         <br/><br/>
-
-          <label>
-            Session Cost (USD)<br/>
-            <input
-              type="number"
-              step="10.0"
-              value={sessionCost}
-              onChange={e => setSessionCost(parseFloat(e.target.value))}
-            />
-          </label>
-          <br/><br/>
-
-          <label>
-            Profile Picture<br/>
-            {previewUrl && (
-              <img
-                src={previewUrl}
-                alt="preview"
-                width={80}
-                style={{ display: 'block', marginBottom: 8 }}
-              />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={e => {
-                const f = e.target.files[0];
-                setFile(f);
-                setPreviewUrl(URL.createObjectURL(f));
-              }}
-            />
-          </label>
-          <br/><br/>
-        </>
-      )}
 
       <button type="submit">Save Changes</button>
     </form>
