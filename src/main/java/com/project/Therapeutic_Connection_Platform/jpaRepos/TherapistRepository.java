@@ -2,6 +2,7 @@ package com.project.Therapeutic_Connection_Platform.jpaRepos;
 
 import com.project.Therapeutic_Connection_Platform.model.Therapist;
 import com.project.Therapeutic_Connection_Platform.model.User;
+import com.project.Therapeutic_Connection_Platform.modelEnums.VerificationState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,5 @@ public interface TherapistRepository extends JpaRepository<Therapist,Long> {
     List<Therapist> findAll();
     Therapist findByUser(User user);
 
+    List<Therapist> findByVerificationState(VerificationState pending);
 }

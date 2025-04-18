@@ -8,7 +8,8 @@ import ReviewManagement from './components/admin/ReviewManagement';
 import Profile from './ProfileManagement/Profile';
 import NavBar from './NavBar';
 import { AuthProvider } from './ProfileManagement/UserContext';
-
+import VerificationBoard from './components/admin/VerificationBoard';
+import { useAuth }        from './ProfileManagement/UserContext';
 
 function AboutUs() {
   return (
@@ -17,6 +18,11 @@ function AboutUs() {
       <p>This is the Therapeutic Connection Platform.</p>
     </div>
   );
+}
+
+function AdminRoute({ children }) {
+  const { userRole } = useAuth();
+  return userRole === 'admin' ? children : <p>403 – admins only</p>;
 }
 
 function App() {
@@ -38,6 +44,9 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/admin/reviews" element={<ReviewManagement />} />
               <Route path="/profile" element={<Profile />} />
+              <Route  path="/admin/verification" element={  <AdminRoute> <VerificationBoard /> </AdminRoute>         }
+              />
+
             </Routes>
           </main>
 

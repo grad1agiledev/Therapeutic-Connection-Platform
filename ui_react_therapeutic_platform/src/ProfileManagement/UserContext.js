@@ -1,12 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../firebaseConfig';
 import { onAuthStateChanged } from "firebase/auth";
+import { signOut } from 'firebase/auth';
 
 const UserContext = createContext();
+
+
 
 export function useAuth() {
   return useContext(UserContext);
 }
+
+//used automatically firebase method for log out
+function logOut() {
+    return signOut(auth);
+}
+
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -39,6 +48,7 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     userRole,
+    logOut,
   };
 
   return (
