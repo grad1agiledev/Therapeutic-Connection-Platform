@@ -101,4 +101,55 @@
   .language-options {
     grid-template-columns: 1fr;
   }
+}
+
+.therapist-filter {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.therapist-filter .form-group {
+  margin-bottom: 15px;
+}
+
+.therapist-filter .form-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.therapist-filter .form-control,
+.therapist-filter .form-select {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  padding: 8px 12px;
+}
+
+.therapist-filter .form-control:focus,
+.therapist-filter .form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.therapist-filter .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  padding: 8px 20px;
+  font-weight: 600;
+}
+
+.therapist-filter .btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+.therapist-filter .form-check {
+  margin-top: 8px;
+}
+
+.therapist-filter .form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
 } 
