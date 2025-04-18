@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import TherapistCard from './TherapistCard';
+import { Card, Row, Col, Badge } from 'react-bootstrap';
 import TherapistFilter from './TherapistFilter';
 import TherapistSort from './TherapistSort';
 import TherapistDetail from './TherapistDetail';
 import './TherapistList.css';
 import { auth, db } from '../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import axios from 'axios';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);
@@ -16,7 +16,11 @@ const TherapistList = () => {
   const [filters, setFilters] = useState({
     specialization: '',
     location: '',
-    languages: []
+    languages: [],
+    virtualAvailable: false,
+    minRating: 0,
+    maxCost: null,
+    availableTime: ''
   });
   const [sortConfig, setSortConfig] = useState({ field: 'name', order: 'asc' });
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
@@ -71,8 +75,9 @@ const TherapistList = () => {
       setLoading(true);
       
       // Show all therapists if filters are empty
-      if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0) {
-        //setFilteredTherapists(sortTherapists(therapists, sortConfig));
+      if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0 &&
+          !newFilters.virtualAvailable && newFilters.minRating === 0 && !newFilters.maxCost && !newFilters.availableTime) {
+        setFilteredTherapists(sortTherapists(therapists, sortConfig));
         setLoading(false);
         return;
       }
@@ -82,9 +87,13 @@ const TherapistList = () => {
       if (newFilters.specialization) params.specialization = newFilters.specialization;
       if (newFilters.location) params.location = newFilters.location;
       if (newFilters.languages.length > 0) params.languages = newFilters.languages;
+      if (newFilters.virtualAvailable) params.virtualAvailable = newFilters.virtualAvailable;
+      if (newFilters.minRating > 0) params.minRating = newFilters.minRating;
+      if (newFilters.maxCost) params.maxCost = newFilters.maxCost;
+      if (newFilters.availableTime) params.availableTime = newFilters.availableTime;
       
       const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
-     // setFilteredTherapists(sortTherapists(response.data, sortConfig));
+      setFilteredTherapists(sortTherapists(response.data, sortConfig));
       setLoading(false);
     } catch (err) {
       setError('An error occurred while filtering therapists. Please try again later.');
@@ -102,22 +111,6 @@ const TherapistList = () => {
     setSelectedTherapistId(therapistId);
   };
 
-  const handleBackToList = () => {
-    setSelectedTherapistId(null);
-  };
-
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
-
-  if (selectedTherapistId) {
-    return <TherapistDetail therapistId={selectedTherapistId} onBack={handleBackToList} />;
-  }
-
   return (
     <div className="therapist-list-container">
       <h1>Therapist Profiles</h1>
@@ -132,21 +125,49 @@ const TherapistList = () => {
         {filteredTherapists.length} therapists found
       </div>
       
-      <div className="therapist-grid">
-        {filteredTherapists.length > 0 ? (
-          filteredTherapists.map(therapist => (
-            <TherapistCard 
-              key={therapist.id} 
-              therapist={therapist} 
-              onViewProfile={handleViewProfile}
-            />
-          ))
-        ) : (
-          <div className="no-results">
-            No therapists found matching your search criteria. Please adjust your filters.
-          </div>
-        )}
-      </div>
+      <Row>
+        {filteredTherapists.map(therapist => (
+          <Col key={therapist.id} md={4} className="mb-4">
+            <Card className="therapist-card">
+              <Card.Body>
+                <Card.Title>{therapist.name}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">
+                  {therapist.specialization}
+                </Card.Subtitle>
+                
+                <div className="therapist-info">
+                  <p><strong>Location:</strong> {therapist.location}</p>
+                  <p><strong>Languages:</strong> {therapist.languages.join(', ')}</p>
+                  <p><strong>Rating:</strong> {therapist.rating} ⭐</p>
+                  <p><strong>Cost:</strong> ${therapist.cost}/session</p>
+                </div>
+
+                <div className="therapist-availability">
+                  {therapist.virtualAvailable && (
+                    <Badge bg="info" className="me-2">Virtual Sessions</Badge>
+                  )}
+                  {therapist.availableTimes.map(time => (
+                    <Badge key={time} bg="secondary" className="me-2">
+                      {time.charAt(0).toUpperCase() + time.slice(1)}
+                    </Badge>
+                  ))}
+                </div>
+
+                <button className="btn btn-primary mt-3" onClick={() => handleViewProfile(therapist.id)}>
+                  View Profile
+                </button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      
+      {selectedTherapistId && (
+        <TherapistDetail 
+          therapistId={selectedTherapistId} 
+          onBack={() => setSelectedTherapistId(null)} 
+        />
+      )}
     </div>
   );
 };
