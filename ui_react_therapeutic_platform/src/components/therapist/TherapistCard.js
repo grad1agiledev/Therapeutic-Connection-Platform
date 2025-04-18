@@ -4,6 +4,8 @@ import './TherapistCard.css';
 const TherapistCard = ({ therapist, onViewProfile }) => {
   const [showDetails, setShowDetails] = useState(false);
 
+  const rating      = Number(therapist.rating      ?? 0);
+  const sessionCost = Number(therapist.sessionCost ?? 0);
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
@@ -23,12 +25,12 @@ const TherapistCard = ({ therapist, onViewProfile }) => {
           className="therapist-image"
         />
         <div className="therapist-basic-info">
-          <h2 className="therapist-name">{therapist.name}</h2>
+          <h2 className="therapist-name">{therapist.user.fullName}</h2>
           <p className="therapist-specialization">{therapist.specialization}</p>
           <div className="therapist-rating">
             <span className="star">★</span> {therapist.rating.toFixed(1)}
           </div>
-          {therapist.isVerified && (
+          {therapist.verified && (
             <div className="verified-badge">
               <span className="verified-icon">✓</span> Verified
             </div>
@@ -38,11 +40,14 @@ const TherapistCard = ({ therapist, onViewProfile }) => {
 
       <div className="therapist-info">
         <div className="therapist-location">
-          <strong>Location:</strong> {therapist.location}
+          <strong>Location:</strong> {therapist.location.name},{therapist.location.country}
         </div>
         <div className="therapist-languages">
-          <strong>Languages:</strong> {therapist.languages.join(', ')}
+          <strong>Languages:</strong> {''}{Array.isArray(therapist.languages) && therapist.languages.length
+                                        ? therapist.languages.map(l => l.langName).join(', ')
+                                        : 'Not specified'}
         </div>
+
         <div className="therapist-session-cost">
           <strong>Session Cost:</strong> ${therapist.sessionCost.toFixed(2)}
         </div>

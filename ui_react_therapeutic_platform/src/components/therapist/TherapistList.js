@@ -1,76 +1,129 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Badge } from 'react-bootstrap';
 import TherapistFilter from './TherapistFilter';
+import TherapistSort from './TherapistSort';
+import TherapistDetail from './TherapistDetail';
 import './TherapistList.css';
+import { auth, db } from '../../firebaseConfig';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import axios from 'axios';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);
   const [filteredTherapists, setFilteredTherapists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    specialization: '',
+    location: '',
+    languages: [],
+    virtualAvailable: false,
+    minRating: 0,
+    maxCost: null,
+    availableTime: ''
+  });
+  const [sortConfig, setSortConfig] = useState({ field: 'name', order: 'asc' });
+  const [selectedTherapistId, setSelectedTherapistId] = useState(null);
 
   useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockTherapists = [
-      {
-        id: 1,
-        name: 'Dr. Sarah Johnson',
-        specialization: 'Anxiety',
-        location: 'New York',
-        virtualAvailable: true,
-        languages: ['English', 'Spanish'],
-        rating: 4.8,
-        cost: 150,
-        availableTimes: ['morning', 'afternoon']
-      },
-      // Add more mock therapists as needed
-    ];
-    setTherapists(mockTherapists);
-    setFilteredTherapists(mockTherapists);
+    const fetchTherapists = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8080/api/therapists');
+        setTherapists(response.data);
+        setFilteredTherapists(sortTherapists(response.data, sortConfig));
+        setLoading(false);
+      } catch (err) {
+        setError('An error occurred while loading therapist information. Please try again later.');
+        setLoading(false);
+        console.error('Therapist loading error:', err);
+      }
+    };
+
+    fetchTherapists();
   }, []);
 
-  const handleFilter = (filters) => {
-    let filtered = [...therapists];
+  const sortTherapists = (therapistList, { field, order }) => {
+    return [...therapistList].sort((a, b) => {
+      let comparison = 0;
 
-    if (filters.specialization) {
-      filtered = filtered.filter(t => t.specialization === filters.specialization);
+      switch (field) {
+        case 'name':
+          comparison = a.user.fullName.localeCompare(b.user.fullName);
+          break;
+//        case 'experience':
+//          comparison = a.yearsOfExperience - b.yearsOfExperience;
+//          break;
+        case 'rating':
+          comparison = a.rating - b.rating;
+          break;
+        case 'price':
+          comparison = a.sessionCost - b.sessionCost;
+          break;
+        default:
+          comparison = 0;
+      }
+
+      return order === 'asc' ? comparison : -comparison;
+    });
+  };
+
+  const handleFilterChange = async (newFilters) => {
+    setFilters(newFilters);
+    
+    try {
+      setLoading(true);
+      
+      // Show all therapists if filters are empty
+      if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0 &&
+          !newFilters.virtualAvailable && newFilters.minRating === 0 && !newFilters.maxCost && !newFilters.availableTime) {
+        setFilteredTherapists(sortTherapists(therapists, sortConfig));
+        setLoading(false);
+        return;
+      }
+      
+      // Create filter parameters
+      const params = {};
+      if (newFilters.specialization) params.specialization = newFilters.specialization;
+      if (newFilters.location) params.location = newFilters.location;
+      if (newFilters.languages.length > 0) params.languages = newFilters.languages;
+      if (newFilters.virtualAvailable) params.virtualAvailable = newFilters.virtualAvailable;
+      if (newFilters.minRating > 0) params.minRating = newFilters.minRating;
+      if (newFilters.maxCost) params.maxCost = newFilters.maxCost;
+      if (newFilters.availableTime) params.availableTime = newFilters.availableTime;
+      
+      const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
+      setFilteredTherapists(sortTherapists(response.data, sortConfig));
+      setLoading(false);
+    } catch (err) {
+      setError('An error occurred while filtering therapists. Please try again later.');
+      setLoading(false);
+      console.error('Filtering error:', err);
     }
+  };
 
-    if (filters.location) {
-      filtered = filtered.filter(t => 
-        t.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
-    }
+  const handleSortChange = (newSortConfig) => {
+    setSortConfig(newSortConfig);
+    setFilteredTherapists(sortTherapists(filteredTherapists, newSortConfig));
+  };
 
-    if (filters.virtualAvailable) {
-      filtered = filtered.filter(t => t.virtualAvailable);
-    }
-
-    if (filters.languages) {
-      const languages = filters.languages.split(',').map(lang => lang.trim());
-      filtered = filtered.filter(t => 
-        languages.some(lang => t.languages.includes(lang))
-      );
-    }
-
-    if (filters.minRating > 0) {
-      filtered = filtered.filter(t => t.rating >= filters.minRating);
-    }
-
-    if (filters.maxCost) {
-      filtered = filtered.filter(t => t.cost <= filters.maxCost);
-    }
-
-    if (filters.availableTime) {
-      filtered = filtered.filter(t => 
-        t.availableTimes.includes(filters.availableTime)
-      );
-    }
-
-    setFilteredTherapists(filtered);
+  const handleViewProfile = (therapistId) => {
+    setSelectedTherapistId(therapistId);
   };
 
   return (
     <div className="therapist-list-container">
-      <TherapistFilter onFilter={handleFilter} />
+      <h1>Therapist Profiles</h1>
+      <p className="intro-text">
+        You can browse therapist profiles without registering. Registration will be required to book appointments.
+      </p>
+      
+      <TherapistFilter onFilterChange={handleFilterChange} />
+      <TherapistSort onSortChange={handleSortChange} />
+      
+      <div className="therapist-count">
+        {filteredTherapists.length} therapists found
+      </div>
       
       <Row>
         {filteredTherapists.map(therapist => (
@@ -100,14 +153,21 @@ const TherapistList = () => {
                   ))}
                 </div>
 
-                <button className="btn btn-primary mt-3">
-                  Book Session
+                <button className="btn btn-primary mt-3" onClick={() => handleViewProfile(therapist.id)}>
+                  View Profile
                 </button>
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
+      
+      {selectedTherapistId && (
+        <TherapistDetail 
+          therapistId={selectedTherapistId} 
+          onBack={() => setSelectedTherapistId(null)} 
+        />
+      )}
     </div>
   );
 };
