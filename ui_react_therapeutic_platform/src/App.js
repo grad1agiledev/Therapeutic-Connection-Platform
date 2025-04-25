@@ -7,6 +7,7 @@ import Login from './Login/Login';
 import ReviewManagement from './components/admin/ReviewManagement';
 import Profile from './ProfileManagement/Profile';
 import NavBar from './NavBar';
+import Calendar from './components/calendar/Calendar';
 import { AuthProvider } from './ProfileManagement/UserContext';
 import VerificationBoard from './components/admin/VerificationBoard';
 import { useAuth }        from './ProfileManagement/UserContext';
@@ -37,7 +38,7 @@ function App() {
 
           <main className="app-main">
             <Routes>
-              <Route path="/" element={<TherapistList />} />
+              <Route path="/" element={<Calendar />} />
               <Route path="/therapists" element={<TherapistList />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/login" element={<Login />} />
