@@ -80,15 +80,19 @@ public class TherapistController {
             );
         }
 
-        therapist.setSpecialization(req.specialization);
-        therapist.setBio(req.bio);
-        therapist.setSessionCost(req.sessionCost);
+        if (req.specialization != null) therapist.setSpecialization(req.specialization);
+        if (req.bio           != null) therapist.setBio(req.bio);
+        if (req.sessionCost   != null) therapist.setSessionCost(req.sessionCost);
+
+        if (req.locationId != null) {
+            Location loc = locationRepo.findById(req.locationId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST, "Invalid locationId"));
+            therapist.setLocation(loc);
+        }
+
        // therapist.setLanguages(req.languages);
-        Location loc = locationRepo.findById(req.locationId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "Invalid locationId"
-                ));
-        therapist.setLocation(loc);
+
 
 
         List<Language> langs = languageRepo.findAllById(req.languageIds);
