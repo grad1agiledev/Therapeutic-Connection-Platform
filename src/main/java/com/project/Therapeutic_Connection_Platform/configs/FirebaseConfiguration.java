@@ -21,7 +21,7 @@ public class FirebaseConfiguration {
     public void init() throws IOException {
         try (InputStream firebaseServiceKey = new FileInputStream(firebaseConfigFilePath))
         {
-            FirebaseOptions firebaseOptions = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(firebaseServiceKey)).build();
+            FirebaseOptions firebaseOptions = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(firebaseServiceKey)).build();
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(firebaseOptions);
