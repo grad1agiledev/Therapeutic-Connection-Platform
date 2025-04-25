@@ -1,140 +1,152 @@
 import React, { useState } from 'react';
+import { Form, Row, Col, Button } from 'react-bootstrap';
 import './TherapistFilter.css';
 
 const TherapistFilter = ({ onFilterChange }) => {
-  const [specialization, setSpecialization] = useState('');
-  const [location, setLocation] = useState('');
-  const [languages, setLanguages] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [filters, setFilters] = useState({
+    specialization: '',
+    location: '',
+    virtualAvailable: false,
+    languages: '',
+    minRating: 0,
+    maxCost: '',
+    availableTime: ''
+  });
 
-  // Language options
-  const languageOptions = [
-    { value: 'Turkish', label: 'Turkish' },
-    { value: 'English', label: 'English' },
-    { value: 'German', label: 'German' },
-    { value: 'French', label: 'French' }
+  const specializations = [
+    'Anxiety', 'Depression', 'Family Therapy', 'Couples Therapy',
+    'Trauma', 'Addiction', 'Child Therapy', 'Stress Management'
   ];
 
-  // Location options
-  const locationOptions = [
-    { value: '', label: 'All Locations' },
-    { value: 'Istanbul', label: 'Istanbul' },
-    { value: 'Ankara', label: 'Ankara' },
-    { value: 'Izmir', label: 'Izmir' },
-    { value: 'Bursa', label: 'Bursa' },
-    { value: 'Antalya', label: 'Antalya' }
-  ];
-
-  // Specialization options
-  const specializationOptions = [
-    { value: '', label: 'All Specializations' },
-    { value: 'Anxiety', label: 'Anxiety' },
-    { value: 'Depression', label: 'Depression' },
-    { value: 'Family Therapy', label: 'Family Therapy' },
-    { value: 'Couples Therapy', label: 'Couples Therapy' },
-    { value: 'Trauma', label: 'Trauma' },
-    { value: 'EMDR', label: 'EMDR' },
-    { value: 'Child and Adolescent Psychology', label: 'Child and Adolescent Psychology' },
-    { value: 'Cognitive Behavioral Therapy', label: 'Cognitive Behavioral Therapy' }
-  ];
-
-  const handleLanguageChange = (e) => {
-    const value = e.target.value;
-    setLanguages(
-      languages.includes(value)
-        ? languages.filter(lang => lang !== value)
-        : [...languages, value]
-    );
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onFilterChange({
-      specialization,
-      location,
-      languages
-    });
-  };
-
-  const handleReset = () => {
-    setSpecialization('');
-    setLocation('');
-    setLanguages([]);
-    onFilterChange({
-      specialization: '',
-      location: '',
-      languages: []
-    });
-  };
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    onFilterChange(filters);
   };
 
   return (
-    <div className={`filter-container ${isExpanded ? 'expanded' : ''}`}>
-      <div className="filter-header" onClick={toggleExpand}>
-        <h2>Filter Therapists</h2>
-        <span className="expand-icon">{isExpanded ? '▲' : '▼'}</span>
-      </div>
-      
-      {isExpanded && (
-        <form onSubmit={handleSubmit} className="filter-form">
-          <div className="filter-section">
-            <label htmlFor="specialization">Specialization:</label>
-            <select
-              id="specialization"
-              value={specialization}
-              onChange={(e) => setSpecialization(e.target.value)}
+    <Form onSubmit={handleSubmit} className="therapist-filter">
+      <Row>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Specialization</Form.Label>
+            <Form.Select
+              name="specialization"
+              value={filters.specialization}
+              onChange={handleChange}
             >
-              {specializationOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
+              <option value="">All Specializations</option>
+              {specializations.map(spec => (
+                <option key={spec} value={spec}>{spec}</option>
               ))}
-            </select>
-          </div>
+            </Form.Select>
+          </Form.Group>
+        </Col>
 
-          <div className="filter-section">
-            <label htmlFor="location">Location:</label>
-            <select
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Location</Form.Label>
+            <Form.Control
+              type="text"
+              name="location"
+              value={filters.location}
+              onChange={handleChange}
+              placeholder="Enter location"
+            />
+          </Form.Group>
+        </Col>
+
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Virtual Sessions</Form.Label>
+            <Form.Check
+              type="checkbox"
+              name="virtualAvailable"
+              checked={filters.virtualAvailable}
+              onChange={handleChange}
+              label="Available for virtual sessions"
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+
+      <Row className="mt-3">
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Languages</Form.Label>
+            <Form.Control
+              type="text"
+              name="languages"
+              value={filters.languages}
+              onChange={handleChange}
+              placeholder="Enter languages (comma separated)"
+            />
+          </Form.Group>
+        </Col>
+
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Minimum Rating</Form.Label>
+            <Form.Select
+              name="minRating"
+              value={filters.minRating}
+              onChange={handleChange}
             >
-              {locationOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+              <option value="0">Any Rating</option>
+              <option value="4">4+ Stars</option>
+              <option value="4.5">4.5+ Stars</option>
+              <option value="5">5 Stars</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
 
-          <div className="filter-section">
-            <label>Languages:</label>
-            <div className="language-options">
-              {languageOptions.map(option => (
-                <div key={option.value} className="language-option">
-                  <input
-                    type="checkbox"
-                    id={`lang-${option.value}`}
-                    value={option.value}
-                    checked={languages.includes(option.value)}
-                    onChange={handleLanguageChange}
-                  />
-                  <label htmlFor={`lang-${option.value}`}>{option.label}</label>
-                </div>
-              ))}
-            </div>
-          </div>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Maximum Cost (per session)</Form.Label>
+            <Form.Control
+              type="number"
+              name="maxCost"
+              value={filters.maxCost}
+              onChange={handleChange}
+              placeholder="Enter maximum cost"
+            />
+          </Form.Group>
+        </Col>
+      </Row>
 
-          <div className="filter-actions">
-            <button type="submit" className="filter-button apply">Apply</button>
-            <button type="button" className="filter-button reset" onClick={handleReset}>Reset</button>
-          </div>
-        </form>
-      )}
-    </div>
+      <Row className="mt-3">
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label>Available Time</Form.Label>
+            <Form.Select
+              name="availableTime"
+              value={filters.availableTime}
+              onChange={handleChange}
+            >
+              <option value="">Any Time</option>
+              <option value="morning">Morning (8AM-12PM)</option>
+              <option value="afternoon">Afternoon (12PM-5PM)</option>
+              <option value="evening">Evening (5PM-9PM)</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+      </Row>
+
+      <Row className="mt-3">
+        <Col>
+          <Button variant="primary" type="submit">
+            Apply Filters
+          </Button>
+        </Col>
+      </Row>
+    </Form>
   );
 };
 
