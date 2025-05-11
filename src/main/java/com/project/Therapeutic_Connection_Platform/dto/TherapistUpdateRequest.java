@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TherapistUpdateRequest {
 
-    public String specialization;
+    public List<String> specializations;
     public String bio;
     public Double sessionCost;
 
@@ -12,4 +12,5 @@ public class TherapistUpdateRequest {
     public Long locationId;
     public String profilePicture;
     public List<Long> languageIds;
+    public Boolean isVirtual;
 }
