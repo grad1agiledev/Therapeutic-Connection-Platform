@@ -98,3 +98,7 @@ All endpoints use JSON for requests and responses.
 - Keep your API keys and service account files secure
 - Store Firebase configuration JSON in a secure location
 - Rotate credentials if they are compromised
+
+## Branch: redesign/ui-overhaul
+
+Bu branch, platformun kullanıcı arayüzünü (UI) baştan sona modern ve kullanıcı dostu bir şekilde yeniden tasarlamak için oluşturulmuştur. Tüm UI değişiklikleri ve yeni tasarım bu branch üzerinde geliştirilecektir.

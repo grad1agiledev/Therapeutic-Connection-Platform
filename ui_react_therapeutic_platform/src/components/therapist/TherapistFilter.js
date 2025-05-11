@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Row, Col, Button } from 'react-bootstrap';
-import './TherapistFilter.css';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Button from '@mui/material/Button';
 
 const TherapistFilter = ({ onFilterChange }) => {
   const [filters, setFilters] = useState({
@@ -32,121 +40,100 @@ const TherapistFilter = ({ onFilterChange }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="therapist-filter">
-      <Row>
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Specialization</Form.Label>
-            <Form.Select
+    <Box component="form" onSubmit={handleSubmit} sx={{ mb: 3, p: 2, bgcolor: '#FFFDE7', borderRadius: 2, boxShadow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth>
+            <InputLabel>Specialization</InputLabel>
+            <Select
               name="specialization"
               value={filters.specialization}
+              label="Specialization"
               onChange={handleChange}
             >
-              <option value="">All Specializations</option>
+              <MenuItem value="">All Specializations</MenuItem>
               {specializations.map(spec => (
-                <option key={spec} value={spec}>{spec}</option>
+                <MenuItem key={spec} value={spec}>{spec}</MenuItem>
               ))}
-            </Form.Select>
-          </Form.Group>
-        </Col>
-
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Location</Form.Label>
-            <Form.Control
-              type="text"
-              name="location"
-              value={filters.location}
-              onChange={handleChange}
-              placeholder="Enter location"
-            />
-          </Form.Group>
-        </Col>
-
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Virtual Sessions</Form.Label>
-            <Form.Check
-              type="checkbox"
-              name="virtualAvailable"
-              checked={filters.virtualAvailable}
-              onChange={handleChange}
-              label="Available for virtual sessions"
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row className="mt-3">
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Languages</Form.Label>
-            <Form.Control
-              type="text"
-              name="languages"
-              value={filters.languages}
-              onChange={handleChange}
-              placeholder="Enter languages (comma separated)"
-            />
-          </Form.Group>
-        </Col>
-
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Minimum Rating</Form.Label>
-            <Form.Select
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField
+            fullWidth
+            label="Location"
+            name="location"
+            value={filters.location}
+            onChange={handleChange}
+            placeholder="Enter location"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField
+            fullWidth
+            label="Languages"
+            name="languages"
+            value={filters.languages}
+            onChange={handleChange}
+            placeholder="Enter languages (comma separated)"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControlLabel
+            control={<Checkbox name="virtualAvailable" checked={filters.virtualAvailable} onChange={handleChange} />}
+            label="Virtual Sessions"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth>
+            <InputLabel>Minimum Rating</InputLabel>
+            <Select
               name="minRating"
               value={filters.minRating}
+              label="Minimum Rating"
               onChange={handleChange}
             >
-              <option value="0">Any Rating</option>
-              <option value="4">4+ Stars</option>
-              <option value="4.5">4.5+ Stars</option>
-              <option value="5">5 Stars</option>
-            </Form.Select>
-          </Form.Group>
-        </Col>
-
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Maximum Cost (per session)</Form.Label>
-            <Form.Control
-              type="number"
-              name="maxCost"
-              value={filters.maxCost}
-              onChange={handleChange}
-              placeholder="Enter maximum cost"
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row className="mt-3">
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>Available Time</Form.Label>
-            <Form.Select
+              <MenuItem value={0}>Any Rating</MenuItem>
+              <MenuItem value={4}>4+ Stars</MenuItem>
+              <MenuItem value={4.5}>4.5+ Stars</MenuItem>
+              <MenuItem value={5}>5 Stars</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField
+            fullWidth
+            label="Maximum Cost (per session)"
+            name="maxCost"
+            type="number"
+            value={filters.maxCost}
+            onChange={handleChange}
+            placeholder="Enter maximum cost"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth>
+            <InputLabel>Available Time</InputLabel>
+            <Select
               name="availableTime"
               value={filters.availableTime}
+              label="Available Time"
               onChange={handleChange}
             >
-              <option value="">Any Time</option>
-              <option value="morning">Morning (8AM-12PM)</option>
-              <option value="afternoon">Afternoon (12PM-5PM)</option>
-              <option value="evening">Evening (5PM-9PM)</option>
-            </Form.Select>
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row className="mt-3">
-        <Col>
-          <Button variant="primary" type="submit">
+              <MenuItem value="">Any Time</MenuItem>
+              <MenuItem value="morning">Morning (8AM-12PM)</MenuItem>
+              <MenuItem value="afternoon">Afternoon (12PM-5PM)</MenuItem>
+              <MenuItem value="evening">Evening (5PM-9PM)</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button type="submit" variant="contained" sx={{ bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }} fullWidth>
             Apply Filters
           </Button>
-        </Col>
-      </Row>
-    </Form>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

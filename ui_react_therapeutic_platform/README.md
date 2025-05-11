@@ -1,3 +1,13 @@
+# SoulThera
+
+---
+
+This branch is created to completely redesign the user interface (UI) of the platform in a modern and user-friendly way. All UI changes and the new design will be developed on this branch.
+
+New logo: src/logo.png
+
+A modern look will be achieved with Material Design principles.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -68,3 +78,16 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Modern UI & Material Design
+
+- Material UI (MUI) library is added to the project.
+- All pages and components are being redesigned to have a modern, warm, and professional look.
+- Color palette: Yellow (#FFD54F), brown (#8D6E63, #5D4037), and light cream (#FFF8E1) tones matching the logo.
+- Responsive and user-friendly design is being implemented.
+
+To install:
+
+```bash
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+```

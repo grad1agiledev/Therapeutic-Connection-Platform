@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ReviewManagement.css';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 
 const ReviewManagement = () => {
     const [reviews, setReviews] = useState([]);
@@ -18,7 +25,7 @@ const ReviewManagement = () => {
             setReviews(response.data);
             setLoading(false);
         } catch (err) {
-            setError('Yorumlar yüklenirken bir hata oluştu.');
+            setError('An error occurred while loading reviews.');
             setLoading(false);
         }
     };
@@ -29,7 +36,7 @@ const ReviewManagement = () => {
             setAdminComment('');
             fetchPendingReviews();
         } catch (err) {
-            setError('Yorum onaylanırken bir hata oluştu.');
+            setError('An error occurred while approving the review.');
         }
     };
 
@@ -39,70 +46,72 @@ const ReviewManagement = () => {
             setAdminComment('');
             fetchPendingReviews();
         } catch (err) {
-            setError('Yorum reddedilirken bir hata oluştu.');
+            setError('An error occurred while rejecting the review.');
         }
     };
 
     if (loading) {
-        return <div className="loading">Yükleniyor...</div>;
+        return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>;
     }
 
     if (error) {
-        return <div className="error">{error}</div>;
+        return <Alert severity="error">{error}</Alert>;
     }
 
     return (
-        <div className="review-management">
-            <h1>Yorum Yönetimi</h1>
-            <p className="subtitle">Onay Bekleyen Yorumlar</p>
+        <Box sx={{ maxWidth: 800, mx: 'auto', mt: 6 }}>
+            <Typography variant="h4" color="#5D4037" fontWeight={700} gutterBottom>Review Management</Typography>
+            <Typography variant="subtitle1" color="text.secondary" mb={3}>Pending Reviews</Typography>
 
             {reviews.length === 0 ? (
-                <div className="no-reviews">Onay bekleyen yorum bulunmamaktadır.</div>
+                <Alert severity="info">There are no pending reviews.</Alert>
             ) : (
-                <div className="reviews-list">
+                <Box>
                     {reviews.map(review => (
-                        <div key={review.id} className="review-card">
-                            <div className="review-header">
-                                <div className="review-meta">
-                                    <span className="rating">Puan: {review.rating}/5</span>
-                                    <span className="date">
+                        <Card key={review.id} sx={{ mb: 3, boxShadow: 2, borderRadius: 2 }}>
+                            <CardContent>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        Rating: {review.rating}/5
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
                                         {new Date(review.createdAt).toLocaleDateString()}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div className="review-content">
-                                <p>{review.comment}</p>
-                            </div>
-
-                            <div className="review-actions">
-                                <textarea
-                                    placeholder="Yönetici yorumu (opsiyonel)"
+                                    </Typography>
+                                </Box>
+                                <Typography variant="body1" sx={{ mb: 2 }}>{review.comment}</Typography>
+                                <TextField
+                                    label="Admin comment (optional)"
                                     value={adminComment}
                                     onChange={(e) => setAdminComment(e.target.value)}
-                                    className="admin-comment"
+                                    fullWidth
+                                    multiline
+                                    minRows={2}
+                                    sx={{ mb: 2 }}
                                 />
-                                
-                                <div className="action-buttons">
-                                    <button
-                                        className="approve-button"
+                                <Box sx={{ display: 'flex', gap: 2 }}>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
                                         onClick={() => handleApprove(review.id)}
+                                        sx={{ fontWeight: 600 }}
                                     >
-                                        Onayla
-                                    </button>
-                                    <button
-                                        className="reject-button"
+                                        Approve
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
                                         onClick={() => handleReject(review.id)}
+                                        sx={{ fontWeight: 600 }}
                                     >
-                                        Reddet
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                                        Reject
+                                    </Button>
+                                </Box>
+                            </CardContent>
+                        </Card>
                     ))}
-                </div>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 
