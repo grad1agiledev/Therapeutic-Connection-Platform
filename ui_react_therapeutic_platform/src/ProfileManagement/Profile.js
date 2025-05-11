@@ -12,6 +12,54 @@ import FormControl from '@mui/material/FormControl';
 import Chip from '@mui/material/Chip';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+
+const SPECIALIZATIONS = [
+  'Anxiety',
+  'Depression',
+  'Trauma',
+  'Relationship Issues',
+  'Family Therapy',
+  'Addiction',
+  'Eating Disorders',
+  'PTSD',
+  'OCD',
+  'ADHD',
+  'Autism',
+  'Grief',
+  'Stress Management',
+  'Career Counseling',
+  'LGBTQ+ Issues',
+  'Cultural Issues',
+  'Anger Management',
+  'Self-esteem',
+  'Sleep Disorders',
+  'Chronic Pain'
+];
+
+const LANGUAGES = [
+  { id: 1, name: 'English' },
+  { id: 2, name: 'Mandarin Chinese' },
+  { id: 3, name: 'Hindi' },
+  { id: 4, name: 'Spanish' },
+  { id: 5, name: 'Arabic' },
+  { id: 6, name: 'Bengali' },
+  { id: 7, name: 'Portuguese' },
+  { id: 8, name: 'Russian' },
+  { id: 9, name: 'Japanese' },
+  { id: 10, name: 'German' },
+  { id: 11, name: 'French' },
+  { id: 12, name: 'Korean' },
+  { id: 13, name: 'Turkish' },
+  { id: 14, name: 'Italian' },
+  { id: 15, name: 'Vietnamese' },
+  { id: 16, name: 'Persian' },
+  { id: 17, name: 'Polish' },
+  { id: 18, name: 'Ukrainian' },
+  { id: 19, name: 'Dutch' },
+  { id: 20, name: 'Swedish' }
+];
 
 export default function Profile() {
   const { currentUser, userRole } = useAuth();
@@ -22,7 +70,7 @@ export default function Profile() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [specialization, setSpecialization] = useState('');
+  const [specializations, setSpecializations] = useState([]);
   const [bio, setBio] = useState('');
   const [sessionCost, setSessionCost] = useState('');
   const [file, setFile] = useState(null);
@@ -36,6 +84,7 @@ export default function Profile() {
   const [licenceDocUrl, setLicenceDocUrl] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isVirtual, setIsVirtual] = useState(false);
 
   async function requestVerification() {
     try {
@@ -89,13 +138,14 @@ export default function Profile() {
             .then(th => {
               setSelectedLocation(th.location?.id || '');
               setLocId(th.location?.id || '');
-              setSpecialization(th.specialization || '');
+              setSpecializations(th.specializations || []);
               setBio(th.bio || '');
               setSessionCost(th.sessionCost || 0);
               setPreviewUrl(th.profilePicture || '');
               setLanguageIds(th.languages?.map(l => l.id) || []);
               setVerificationState(th.verificationState);
               setLicenceDocUrl(th.licenceDocument || '');
+              setIsVirtual(th.isVirtual || false);
             });
         }
       })
@@ -150,12 +200,13 @@ export default function Profile() {
       }
       if (userRole === 'therapist') {
         const thPayload = {
-          specialization,
+          specializations,
           bio,
           sessionCost,
           locationId: locId,
           profilePicture: picUrl,
-          languageIds
+          languageIds,
+          isVirtual
         };
         const res2 = await fetch(
           `http://localhost:8080/api/therapists/${currentUser.uid}`,
@@ -222,13 +273,29 @@ export default function Profile() {
           </FormControl>
           {userRole === 'therapist' && (
             <>
-              <TextField
-                label="Specialization"
-                value={specialization}
-                onChange={e => setSpecialization(e.target.value)}
-                fullWidth
-                margin="normal"
-              />
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="specializations-label">Specializations</InputLabel>
+                <Select
+                  labelId="specializations-label"
+                  multiple
+                  value={specializations}
+                  onChange={e => setSpecializations(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                  renderValue={selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map(value => (
+                        <Chip key={value} label={value} />
+                      ))}
+                    </Box>
+                  )}
+                  label="Specializations"
+                >
+                  {SPECIALIZATIONS.map(spec => (
+                    <MenuItem key={spec} value={spec}>
+                      {spec}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 label="Bio"
                 value={bio}
@@ -245,15 +312,20 @@ export default function Profile() {
                   multiple
                   value={languageIds}
                   onChange={e => setLanguageIds(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-                  renderValue={selected => selected.map(id => {
-                    const lang = languages.find(l => l.id === id);
-                    return lang ? lang.langName : '';
-                  }).join(', ')}
+                  renderValue={selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map(id => {
+                        const lang = LANGUAGES.find(l => l.id === id);
+                        return <Chip key={id} label={lang ? lang.name : ''} />;
+                      })}
+                    </Box>
+                  )}
                   label="Languages"
-                  sx={{ minHeight: 56 }}
                 >
-                  {languages.map(lang => (
-                    <MenuItem key={lang.id} value={lang.id}>{lang.langName}</MenuItem>
+                  {LANGUAGES.map(lang => (
+                    <MenuItem key={lang.id} value={lang.id}>
+                      {lang.name}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -264,78 +336,69 @@ export default function Profile() {
                 onChange={e => setSessionCost(parseFloat(e.target.value))}
                 fullWidth
                 margin="normal"
+                InputProps={{
+                  inputProps: { min: 0, step: 0.01 }
+                }}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isVirtual}
+                    onChange={e => setIsVirtual(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Offer Virtual Sessions"
               />
               <Box sx={{ my: 2 }}>
                 <Typography variant="subtitle2">Profile Picture</Typography>
                 {previewUrl && (
-                  <img src={previewUrl} alt="preview" width={80} style={{ display: 'block', marginBottom: 8 }} />
+                  <img
+                    src={previewUrl}
+                    alt="Profile preview"
+                    style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 8 }}
+                  />
                 )}
                 <input
                   type="file"
                   accept="image/*"
                   onChange={e => {
-                    const f = e.target.files[0];
-                    setFile(f);
-                    setPreviewUrl(URL.createObjectURL(f));
+                    const file = e.target.files[0];
+                    if (file) {
+                      setFile(file);
+                      setPreviewUrl(URL.createObjectURL(file));
+                    }
                   }}
+                  style={{ marginTop: 8 }}
                 />
               </Box>
-              <Box sx={{ my: 2 }}>
-                <Chip
-                  label={
-                    verificationState === 'VERIFIED'
-                      ? '✔ Profile verified'
-                      : verificationState === 'PENDING'
-                      ? '⏳ Verification request pending'
-                      : '⚠️ Profile not verified'
-                  }
-                  color={
-                    verificationState === 'VERIFIED'
-                      ? 'success'
-                      : verificationState === 'PENDING'
-                      ? 'warning'
-                      : 'error'
-                  }
-                  sx={{ fontWeight: 600, mb: 1 }}
-                />
-                {verificationState === 'UNVERIFIED' && (
-                  <Box sx={{ mt: 2 }}>
-                    <Alert severity="warning" sx={{ mb: 2 }}>
-                      Your profile is not verified yet. Clients won't see you in search results until an admin approves it.
-                    </Alert>
-                    <Typography variant="subtitle2">Upload Licence (PDF/ image)</Typography>
-                    <input
-                      type="file"
-                      accept=".pdf,image/*"
-                      onChange={e => setLicenceFile(e.target.files[0])}
-                    />
-                    {licenceDocUrl &&
-                      (licenceDocUrl.toLowerCase().endsWith('.pdf') ? (
-                        <Typography sx={{ mt: 1 }}>
-                          Current file:&nbsp;
-                          <a href={licenceDocUrl} target="_blank" rel="noreferrer">
-                            uploaded PDF
-                          </a>
-                        </Typography>
-                      ) : (
-                        <img
-                          src={licenceDocUrl}
-                          alt="Licence"
-                          width={120}
-                          style={{ display: 'block', marginTop: 8 }}
-                        />
-                      ))}
-                    <Button
-                      type="button"
-                      disabled={verifyBusy}
-                      onClick={requestVerification}
-                      sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}
-                    >
-                      {verifyBusy ? 'Sending…' : 'Verify my profile'}
-                    </Button>
-                  </Box>
-                )}
-              </Box>
+              {verificationState === 'UNVERIFIED' && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle2">Licence Document</Typography>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={e => setLicenceFile(e.target.files[0])}
+                    style={{ marginTop: 8 }}
+                  />
+                  {licenceDocUrl && (
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      Current file:&nbsp;
+                      <a href={licenceDocUrl} target="_blank" rel="noreferrer">
+                        uploaded PDF
+                      </a>
+                    </Typography>
+                  )}
+                  <Button
+                    type="button"
+                    disabled={verifyBusy}
+                    onClick={requestVerification}
+                    sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}
+                  >
+                    {verifyBusy ? 'Sending…' : 'Verify my profile'}
+                  </Button>
+                </Box>
+              )}
             </>
           )}
           <Button type="submit" variant="contained" sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}>
