@@ -80,7 +80,7 @@ public class TherapistController {
             );
         }
 
-        if (req.specializations != null) therapist.setSpecialization(String.join(", ", req.specializations));
+        if (req.specializations != null) therapist.setSpecializations(req.specializations);
         if (req.bio != null) therapist.setBio(req.bio);
         if (req.sessionCost != null) therapist.setSessionCost(req.sessionCost);
         if (req.isVirtual != null) therapist.setVirtual(req.isVirtual);
