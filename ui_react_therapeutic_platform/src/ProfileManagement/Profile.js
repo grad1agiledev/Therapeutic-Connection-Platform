@@ -15,6 +15,31 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+// Top 20 languages in the world
+const TOP_LANGUAGES = [
+  { id: 1, langName: 'English' },
+  { id: 2, langName: 'Mandarin Chinese' },
+  { id: 3, langName: 'Hindi' },
+  { id: 4, langName: 'Spanish' },
+  { id: 5, langName: 'French' },
+  { id: 6, langName: 'Arabic' },
+  { id: 7, langName: 'Bengali' },
+  { id: 8, langName: 'Portuguese' },
+  { id: 9, langName: 'Russian' },
+  { id: 10, langName: 'Japanese' },
+  { id: 11, langName: 'German' },
+  { id: 12, langName: 'Korean' },
+  { id: 13, langName: 'Turkish' },
+  { id: 14, langName: 'Italian' },
+  { id: 15, langName: 'Vietnamese' },
+  { id: 16, langName: 'Persian' },
+  { id: 17, langName: 'Dutch' },
+  { id: 18, langName: 'Polish' },
+  { id: 19, langName: 'Ukrainian' },
+  { id: 20, langName: 'Romanian' }
+];
+
+// Common therapy specializations
 const SPECIALIZATIONS = [
   'Anxiety',
   'Depression',
@@ -22,43 +47,20 @@ const SPECIALIZATIONS = [
   'Relationship Issues',
   'Family Therapy',
   'Addiction',
+  'Stress Management',
+  'Grief Counseling',
+  'Child Psychology',
+  'Couples Therapy',
+  'Career Counseling',
   'Eating Disorders',
   'PTSD',
   'OCD',
   'ADHD',
-  'Autism',
-  'Grief',
-  'Stress Management',
-  'Career Counseling',
-  'LGBTQ+ Issues',
-  'Cultural Issues',
+  'Autism Spectrum',
+  'LGBTQ+ Counseling',
+  'Substance Abuse',
   'Anger Management',
-  'Self-esteem',
-  'Sleep Disorders',
-  'Chronic Pain'
-];
-
-const LANGUAGES = [
-  { id: 1, name: 'English' },
-  { id: 2, name: 'Mandarin Chinese' },
-  { id: 3, name: 'Hindi' },
-  { id: 4, name: 'Spanish' },
-  { id: 5, name: 'Arabic' },
-  { id: 6, name: 'Bengali' },
-  { id: 7, name: 'Portuguese' },
-  { id: 8, name: 'Russian' },
-  { id: 9, name: 'Japanese' },
-  { id: 10, name: 'German' },
-  { id: 11, name: 'French' },
-  { id: 12, name: 'Korean' },
-  { id: 13, name: 'Turkish' },
-  { id: 14, name: 'Italian' },
-  { id: 15, name: 'Vietnamese' },
-  { id: 16, name: 'Persian' },
-  { id: 17, name: 'Polish' },
-  { id: 18, name: 'Ukrainian' },
-  { id: 19, name: 'Dutch' },
-  { id: 20, name: 'Swedish' }
+  'Self-esteem Issues'
 ];
 
 export default function Profile() {
@@ -75,7 +77,6 @@ export default function Profile() {
   const [sessionCost, setSessionCost] = useState('');
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
-  const [languages, setLanguages] = useState([]);
   const [languageIds, setLanguageIds] = useState([]);
   const [licenceNumber, setLicenceNumber] = useState('');
   const [licenceFile, setLicenceFile] = useState(null);
@@ -131,7 +132,6 @@ export default function Profile() {
           locs.find(l => `${l.name}, ${l.country}` === userData.address)?.id || ''
         );
         setLocations(locs);
-        setLanguages(langs);
         if (userRole === 'therapist') {
           fetch(`http://localhost:8080/api/therapists/${currentUser.uid}`)
             .then(r => r.json())
@@ -315,16 +315,16 @@ export default function Profile() {
                   renderValue={selected => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map(id => {
-                        const lang = LANGUAGES.find(l => l.id === id);
-                        return <Chip key={id} label={lang ? lang.name : ''} />;
+                        const lang = TOP_LANGUAGES.find(l => l.id === id);
+                        return lang ? <Chip key={id} label={lang.langName} /> : null;
                       })}
                     </Box>
                   )}
                   label="Languages"
                 >
-                  {LANGUAGES.map(lang => (
+                  {TOP_LANGUAGES.map(lang => (
                     <MenuItem key={lang.id} value={lang.id}>
-                      {lang.name}
+                      {lang.langName}
                     </MenuItem>
                   ))}
                 </Select>
@@ -349,56 +349,79 @@ export default function Profile() {
                   />
                 }
                 label="Offer Virtual Sessions"
+                sx={{ mt: 2 }}
               />
               <Box sx={{ my: 2 }}>
                 <Typography variant="subtitle2">Profile Picture</Typography>
                 {previewUrl && (
-                  <img
-                    src={previewUrl}
-                    alt="Profile preview"
-                    style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 8 }}
-                  />
+                  <img src={previewUrl} alt="preview" width={80} style={{ display: 'block', marginBottom: 8 }} />
                 )}
                 <input
                   type="file"
                   accept="image/*"
                   onChange={e => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      setFile(file);
-                      setPreviewUrl(URL.createObjectURL(file));
-                    }
+                    const f = e.target.files[0];
+                    setFile(f);
+                    setPreviewUrl(URL.createObjectURL(f));
                   }}
-                  style={{ marginTop: 8 }}
                 />
               </Box>
-              {verificationState === 'UNVERIFIED' && (
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle2">Licence Document</Typography>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={e => setLicenceFile(e.target.files[0])}
-                    style={{ marginTop: 8 }}
-                  />
-                  {licenceDocUrl && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      Current file:&nbsp;
-                      <a href={licenceDocUrl} target="_blank" rel="noreferrer">
-                        uploaded PDF
-                      </a>
-                    </Typography>
-                  )}
-                  <Button
-                    type="button"
-                    disabled={verifyBusy}
-                    onClick={requestVerification}
-                    sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}
-                  >
-                    {verifyBusy ? 'Sending…' : 'Verify my profile'}
-                  </Button>
-                </Box>
-              )}
+              <Box sx={{ my: 2 }}>
+                <Chip
+                  label={
+                    verificationState === 'VERIFIED'
+                      ? '✔ Profile verified'
+                      : verificationState === 'PENDING'
+                      ? '⏳ Verification request pending'
+                      : '⚠️ Profile not verified'
+                  }
+                  color={
+                    verificationState === 'VERIFIED'
+                      ? 'success'
+                      : verificationState === 'PENDING'
+                      ? 'warning'
+                      : 'error'
+                  }
+                  sx={{ fontWeight: 600, mb: 1 }}
+                />
+                {verificationState === 'UNVERIFIED' && (
+                  <Box sx={{ mt: 2 }}>
+                    <Alert severity="warning" sx={{ mb: 2 }}>
+                      Your profile is not verified yet. Clients won't see you in search results until an admin approves it.
+                    </Alert>
+                    <Typography variant="subtitle2">Upload Licence (PDF/ image)</Typography>
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={e => setLicenceFile(e.target.files[0])}
+                    />
+                    {licenceDocUrl &&
+                      (licenceDocUrl.toLowerCase().endsWith('.pdf') ? (
+                        <Typography sx={{ mt: 1 }}>
+                          Current file:&nbsp;
+                          <a href={licenceDocUrl} target="_blank" rel="noreferrer">
+                            uploaded PDF
+                          </a>
+                        </Typography>
+                      ) : (
+                        <img
+                          src={licenceDocUrl}
+                          alt="Licence"
+                          width={120}
+                          style={{ display: 'block', marginTop: 8 }}
+                        />
+                      ))}
+                    <Button
+                      type="button"
+                      disabled={verifyBusy}
+                      onClick={requestVerification}
+                      sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}
+                    >
+                      {verifyBusy ? 'Sending…' : 'Verify my profile'}
+                    </Button>
+                  </Box>
+                )}
+              </Box>
             </>
           )}
           <Button type="submit" variant="contained" sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}>

@@ -19,8 +19,10 @@ public class Therapist {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "area_of_specialization")
-    private String specialization;
+    @ElementCollection
+    @CollectionTable(name = "therapist_specializations", joinColumns = @JoinColumn(name = "therapist_id"))
+    @Column(name = "specialization")
+    private List<String> specializations;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id")
@@ -45,6 +47,9 @@ public class Therapist {
     @Column(name = "is_verified")
     private boolean isVerified;
 
+    @Column(name = "is_virtual")
+    private boolean isVirtual;
+
     @Column(name="licence_number")
     private String licenceNumber;
 
@@ -58,18 +63,16 @@ public class Therapist {
     @Column(name="verification_notes")
     private String verificationNotes;
 
-    @Column(name="is_virtual")
-    private boolean isVirtual;
 
     public Therapist() {
     }
 
-    public Therapist(Long id, User user, String specialization, Location location, List<Language> languages,
+    public Therapist(Long id, User user, List<String> specializations, Location location, List<Language> languages,
                     double rating, double sessionCost, String profilePicture, String bio, boolean isVerified, String licenceNumber,String licenceDocument,
-                     VerificationState verificationState,String verificationNotes, boolean isVirtual) {
+                     VerificationState verificationState,String verificationNotes) {
         this.id = id;
         this.user= user;
-        this.specialization = specialization;
+        this.specializations = specializations;
         this.location = location;
         this.languages = languages;
         this.rating = rating;
@@ -81,7 +84,6 @@ public class Therapist {
         this.setLicenceDocument(licenceDocument);
         this.setVerificationNotes(verificationNotes);
         this.setVerificationState(verificationState);
-        this.isVirtual = isVirtual;
     }
 
     public Long getId() {
@@ -100,12 +102,12 @@ public class Therapist {
         this.user = user;
     }
 
-    public String getSpecialization() {
-        return specialization;
+    public List<String> getSpecializations() {
+        return specializations;
     }
 
-    public void setSpecialization(String specialization) {
-        this.specialization = specialization;
+    public void setSpecializations(List<String> specializations) {
+        this.specializations = specializations;
     }
 
     public Location getLocation() {
@@ -164,6 +166,14 @@ public class Therapist {
         isVerified = verified;
     }
 
+    public boolean isVirtual() {
+        return isVirtual;
+    }
+
+    public void setVirtual(boolean virtual) {
+        isVirtual = virtual;
+    }
+
     public String getLicenceNumber() {
         return licenceNumber;
     }
@@ -194,13 +204,5 @@ public class Therapist {
 
     public void setVerificationNotes(String verificationNotes) {
         this.verificationNotes = verificationNotes;
-    }
-
-    public boolean isVirtual() {
-        return isVirtual;
-    }
-
-    public void setVirtual(boolean virtual) {
-        isVirtual = virtual;
     }
 }
