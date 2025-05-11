@@ -10,6 +10,7 @@ public class Main {
 		Dotenv dotenv = Dotenv.load();
 		System.setProperty("STRIPE_API_KEY", dotenv.get("STRIPE_API_KEY"));
 		System.setProperty("STRIPE_WEBHOOK_SECRET", dotenv.get("STRIPE_WEBHOOK_SECRET"));
+		System.setProperty("FIREBASE_CONFIG_FILE_PATH", dotenv.get("FIREBASE_CONFIG_FILE_PATH"));
 		SpringApplication.run(Main.class, args);
 	}
 
