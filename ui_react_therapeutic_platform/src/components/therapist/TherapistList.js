@@ -146,11 +146,11 @@ const TherapistList = () => {
                   {therapist.virtualAvailable && (
                     <Badge bg="info" className="me-2">Virtual Sessions</Badge>
                   )}
-                  {therapist.availableTimes.map(time => (
+                  {/* {therapist.availableTimes.map(time => (
                     <Badge key={time} bg="secondary" className="me-2">
                       {time.charAt(0).toUpperCase() + time.slice(1)}
                     </Badge>
-                  ))}
+                  ))} */}
                 </div>
 
                 <button className="btn btn-primary mt-3" onClick={() => handleViewProfile(therapist.id)}>

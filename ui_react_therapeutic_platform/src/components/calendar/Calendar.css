@@ -1,0 +1,122 @@
+/* Calendar container */
+.calendar-container {
+    padding: 0 20px;
+    height: 75vh;
+    background-color: #f9fafb;
+  }
+  
+  /* Modal background */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  
+  /* Modal content box */
+  .modal-content {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Modal input fields */
+  .modal-content input[type="text"],
+  .modal-content input[type="date"],
+  .modal-content input[type="time"],
+  .modal-content input[type="checkbox"],
+  .modal-content input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .recurring-checkbox-group {
+    display: flex;
+    align-items: left;
+    gap: 8px; /* space between label and checkbox */
+  }
+  
+  /* Labels inside modal */
+  .modal-content label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #374151;
+  }
+  
+  /* Modal buttons */
+  .modal-content button {
+    padding: 10px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Cancel button styling */
+  .modal-content button[type="button"] {
+    background-color: #ef4444;
+  }
+  
+  /* Button hover effect */
+  .modal-content button:hover {
+    background-color: #2563eb;
+  }
+  
+  /* Cancel button hover */
+  .modal-content button[type="button"]:hover {
+    background-color: #dc2626;
+  }
+  
+  /* Create Event Button outside modal */
+  .calendar-container > button {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #10b981;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Create Event button hover */
+  .calendar-container > button:hover {
+    background-color: #059669;
+  }
+  
+  /* FullCalendar fixes */
+  .fc-toolbar-title {
+    font-size: 22px;
+    color: #111827;
+  }
+  
+  .fc-button {
+    background-color: #3b82f6 !important;
+    font-size: 14px !important;
+  }
+  
+  .fc-button:hover {
+    background-color: #2563eb !important;
+  }
+  
