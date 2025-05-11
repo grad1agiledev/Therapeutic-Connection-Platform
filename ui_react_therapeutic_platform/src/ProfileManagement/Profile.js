@@ -163,7 +163,7 @@ export default function Profile() {
           specialization,
           bio,
           sessionCost,
-          locationId: locId,
+          locationId: locId ,
           profilePicture: picUrl,
           languageIds
         };

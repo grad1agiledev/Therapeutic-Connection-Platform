@@ -39,9 +39,13 @@ const TherapistCard = ({ therapist, onViewProfile }) => {
       </div>
 
       <div className="therapist-info">
-        <div className="therapist-location">
-          <strong>Location:</strong> {therapist.location.name},{therapist.location.country}
-        </div>
+
+    <div className="therapist-location">
+      <strong>Location:</strong>{" "}
+      {therapist.location?.name && therapist.location?.country
+        ? `${therapist.location.name}, ${therapist.location.country}`
+        : "Not specified"}
+    </div>
         <div className="therapist-languages">
           <strong>Languages:</strong> {''}{Array.isArray(therapist.languages) && therapist.languages.length
                                         ? therapist.languages.map(l => l.langName).join(', ')
