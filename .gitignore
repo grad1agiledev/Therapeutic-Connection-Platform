@@ -43,3 +43,4 @@ out/
 .env.*.local
 
 project_description.txt
+src/main/resources/firebase/*.json
