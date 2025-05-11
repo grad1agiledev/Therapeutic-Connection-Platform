@@ -1,43 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './UserContext';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function Profile() {
   const { currentUser, userRole } = useAuth();
-  const [loading, setLoading]     = useState(true);
+  const [loading, setLoading] = useState(true);
   const [locations, setLocations] = useState([]);
-  const [locId, setLocId]         = useState('');
-
-  // common fields
-  const [fullName, setFullName]   = useState('');
-  const [phone, setPhone]         = useState('');
-
-  // patient only
-  const [address, setAddress]     = useState('');
-
-  // therapist only
+  const [locId, setLocId] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [specialization, setSpecialization]     = useState('');
-  const [bio, setBio]                           = useState('');
-  const [sessionCost, setSessionCost]           = useState('');
-  const [file, setFile]                         = useState(null);
-  const [previewUrl, setPreviewUrl]             = useState('');
-
-  const [languages, setLanguages]       = useState([]);
-  const [languageIds, setLanguageIds]   = useState([]);
-
+  const [specialization, setSpecialization] = useState('');
+  const [bio, setBio] = useState('');
+  const [sessionCost, setSessionCost] = useState('');
+  const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [languages, setLanguages] = useState([]);
+  const [languageIds, setLanguageIds] = useState([]);
   const [licenceNumber, setLicenceNumber] = useState('');
-  const [licenceFile,   setLicenceFile]   = useState(null);
-  const [verifyBusy,     setVerifyBusy]     = useState(false);
+  const [licenceFile, setLicenceFile] = useState(null);
+  const [verifyBusy, setVerifyBusy] = useState(false);
   const [verificationState, setVerificationState] = useState('UNVERIFIED');
-
   const [licenceDocUrl, setLicenceDocUrl] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-
-  //verification request for therapist
   async function requestVerification() {
     try {
       setVerifyBusy(true);
-
       let licenceUrl = '';
       if (licenceFile) {
         const fd = new FormData();
@@ -48,85 +50,76 @@ export default function Profile() {
         );
         licenceUrl = (await up.json()).url;
       }
-
       await fetch(
-            `http://localhost:8080/api/therapists/${currentUser.uid}/verify`,
-            {
-              method : 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body   : JSON.stringify({
-                licenceDocument : licenceUrl
-              })
-            }
-          );
-
-          alert('Verification request sent!');
-          //setIsVerified(th.verificationState === 'VERIFIED');
-          setLicenceDocUrl(licenceUrl);
-        } catch (e) {
-          alert('Failed: ' + e.message);
-        } finally {
-          setVerifyBusy(false);
+        `http://localhost:8080/api/therapists/${currentUser.uid}/verify`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ licenceDocument: licenceUrl })
         }
-      }
+      );
+      setSuccess('Verification request sent!');
+      setLicenceDocUrl(licenceUrl);
+    } catch (e) {
+      setError('Failed: ' + e.message);
+    } finally {
+      setVerifyBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!currentUser) return;
-
     Promise.all([
-        fetch(`http://localhost:8080/api/users/${currentUser.uid}`).then(r => r.json()),
-        fetch('http://localhost:8080/api/locations').then(r => r.json()),
-        fetch('http://localhost:8080/api/languages').then(r => r.json())
-      ])
-    .then(([userData, locs,langs]) => {
-      setFullName(userData.fullName);
-      setPhone(userData.phone);
-      setAddress(userData.address || '');
-
-      setLocId(
+      fetch(`http://localhost:8080/api/users/${currentUser.uid}`).then(r => r.json()),
+      fetch('http://localhost:8080/api/locations').then(r => r.json()),
+      fetch('http://localhost:8080/api/languages').then(r => r.json())
+    ])
+      .then(([userData, locs, langs]) => {
+        setFullName(userData.fullName);
+        setPhone(userData.phone);
+        setAddress(userData.address || '');
+        setLocId(
           locs.find(l => `${l.name}, ${l.country}` === userData.address)?.id || ''
-          );
-
-      setLocations(locs);
-      setLanguages(langs);
-
-      if (userRole === 'therapist') {
-        fetch(`http://localhost:8080/api/therapists/${currentUser.uid}`)
-          .then(r => r.json())
-          .then(th => {
-            setSelectedLocation(th.location?.id || '');
-            setLocId(th.location?.id || '');
-            setSpecialization(th.specialization || '');
-            setBio(th.bio || '');
-            setSessionCost(th.sessionCost || 0);
-            setPreviewUrl(th.profilePicture || '');
-            setLanguageIds(th.languages?.map(l => l.id) || []);
-            //setIsVerified(Boolean(th.isVerified));
-            setVerificationState(th.verificationState);
-            setLicenceDocUrl(th.licenceDocument || '');
-          });
-      }
-    })
-    .catch(console.error)
-    .finally(() => setLoading(false));
+        );
+        setLocations(locs);
+        setLanguages(langs);
+        if (userRole === 'therapist') {
+          fetch(`http://localhost:8080/api/therapists/${currentUser.uid}`)
+            .then(r => r.json())
+            .then(th => {
+              setSelectedLocation(th.location?.id || '');
+              setLocId(th.location?.id || '');
+              setSpecialization(th.specialization || '');
+              setBio(th.bio || '');
+              setSessionCost(th.sessionCost || 0);
+              setPreviewUrl(th.profilePicture || '');
+              setLanguageIds(th.languages?.map(l => l.id) || []);
+              setVerificationState(th.verificationState);
+              setLicenceDocUrl(th.licenceDocument || '');
+            });
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [currentUser, userRole]);
 
-  if (!currentUser) return <p>Please log in to view your profile.</p>;
-  if (loading)      return <p>Loading...</p>;
+  if (!currentUser) return <Alert severity="warning">Please log in to view your profile.</Alert>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>;
 
   const handleLocationChange = e => {
-      const newId = e.target.value;
-        setLocId(newId);
-        const loc = locations.find(l => l.id === parseInt(newId, 10));
-         if (loc) {
-          setAddress(`${loc.name}, ${loc.country}`);
-        }
-       };
+    const newId = e.target.value;
+    setLocId(newId);
+    const loc = locations.find(l => l.id === parseInt(newId, 10));
+    if (loc) {
+      setAddress(`${loc.name}, ${loc.country}`);
+    }
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     try {
-      // updating user
       const userPayload = { fullName, phone, address };
       const res1 = await fetch(
         `http://localhost:8080/api/users/${currentUser.uid}`,
@@ -140,8 +133,6 @@ export default function Profile() {
         const text = await res1.text();
         throw new Error(`User update failed: ${res1.status} ${text}`);
       }
-
-      // if therapist, uploading photo then update therapist
       let picUrl = previewUrl;
       if (userRole === 'therapist' && file) {
         const fd = new FormData();
@@ -157,13 +148,12 @@ export default function Profile() {
         const { url } = await uploadRes.json();
         picUrl = url;
       }
-
       if (userRole === 'therapist') {
         const thPayload = {
           specialization,
           bio,
           sessionCost,
-          locationId: locId ,
+          locationId: locId,
           profilePicture: picUrl,
           languageIds
         };
@@ -180,227 +170,179 @@ export default function Profile() {
           throw new Error(`Therapist update failed: ${res2.status} ${text}`);
         }
       }
-
-
-
-      alert('Profile updated successfully!');
+      setSuccess('Profile updated successfully!');
     } catch (err) {
-      console.error('Error in handleSubmit:', err);
-      alert(`Update failed: ${err.message}`);
+      setError(`Update failed: ${err.message}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ padding: '1rem' }}>
-      <h2>Edit Your Profile</h2>
-
-      {/* Full Name */}
-      <label>
-        Full Name<br/>
-        <input
-          type="text"
-          value={fullName}
-          onChange={e => setFullName(e.target.value)}
-        />
-      </label>
-      <br/><br/>
-
-      {/* Email */}
-      <label>
-        Email<br/>
-        <input type="email" value={currentUser.email} readOnly />
-      </label>
-      <br/><br/>
-
-      {/* Phone */}
-      <label>
-        Phone<br/>
-        <input
-          type="text"
-          value={phone}
-          onChange={e => setPhone(e.target.value)}
-        />
-      </label>
-      <br/><br/>
-
-   {/* location for everyone */}
-         <label>
-           Location<br/>
-           <select value={locId} onChange={handleLocationChange}>
-             <option value="">-- Select --</option>
-             {locations.map(loc => (
-               <option key={loc.id} value={loc.id}>
-                 {loc.name}, {loc.country}
-               </option>
-             ))}
-           </select>
-         </label><br/><br/>
-
-         {userRole === 'therapist' && (
-           <>
-
-             {/* therapist specific fields */}
-                        <label>
-                          Specialization<br />
-                          <input
-                            type="text"
-                            value={specialization}
-                            onChange={e => setSpecialization(e.target.value)}
-                          />
-                        </label>
-                        <br />
-                        <br />
-
-                        <label>
-                          Bio<br />
-                          <textarea
-                            rows={4}
-                            value={bio}
-                            onChange={e => setBio(e.target.value)}
-                          />
-                        </label>
-                        <br />
-                        <br />
-
-                        <label>
-                          Languages (Ctrl‑click for multiple)<br />
-                          <select
-                            multiple
-                            value={languageIds}
-                            onChange={e =>
-                              setLanguageIds(
-                                Array.from(e.target.selectedOptions, o => parseInt(o.value, 10))
-                              )
-                            }
-                            style={{ height: 90 }}
-                          >
-                            {languages.map(lang => (
-                              <option key={lang.id} value={lang.id}>
-                                {lang.langName}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <br />
-                        <br />
-
-                        <label>
-                          Session Cost (USD)<br />
-                          <input
-                            type="number"
-                            step="10.0"
-                            value={sessionCost}
-                            onChange={e => setSessionCost(parseFloat(e.target.value))}
-                          />
-                        </label>
-                        <br />
-                        <br />
-
-                        <label>
-                          Profile Picture<br />
-                          {previewUrl && (
-                            <img
-                              src={previewUrl}
-                              alt="preview"
-                              width={80}
-                              style={{ display: 'block', marginBottom: 8 }}
-                            />
-                          )}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={e => {
-                              const f = e.target.files[0];
-                              setFile(f);
-                              setPreviewUrl(URL.createObjectURL(f));
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-             {/* status badge */}
-             <p
-               style={{
-                 padding: '6px 10px',
-                 borderRadius: 4,
-                 fontWeight: 600,
-                 background:
-                   verificationState === 'VERIFIED'
-                     ? '#e0ffe8'
-                     : verificationState === 'PENDING'
-                     ? '#fff6d9'
-                     : '#ffe8e8',
-                 color:
-                   verificationState === 'VERIFIED'
-                     ? 'green'
-                     : verificationState === 'PENDING'
-                     ? '#b36b00'
-                     : 'crimson'
-               }}
-             >
-               {verificationState === 'VERIFIED'
-                 ? '✔ Profile verified'
-                 : verificationState === 'PENDING'
-                 ? '⏳ Verification request pending'
-                 : '⚠️Profile not verified'}
-             </p>
-
-             {/* if not verified then show only */}
-             {verificationState === 'UNVERIFIED'  && (
-               <>
-                 <hr />
-                 <p style={{ color: 'crimson' }}>
-                   Your profile is not verified yet. Clients won’t see you in search
-                   results until an admin approves it.
-                 </p>
-
-                 <label>
-                   Upload Licence (PDF/ image)<br />
-                   <input
-                     type="file"
-                     accept=".pdf,image/*"
-                     onChange={e => setLicenceFile(e.target.files[0])}
-                   />
-                 </label>
-                 <br />
-
-                 {/* licence document link */}
-                 {licenceDocUrl &&
-                   (licenceDocUrl.toLowerCase().endsWith('.pdf') ? (
-                     <p style={{ marginTop: 6 }}>
-                       Current file:&nbsp;
-                       <a href={licenceDocUrl} target="_blank" rel="noreferrer">
-                         uploaded PDF
-                       </a>
-                     </p>
-                   ) : (
-                     <img
-                       src={licenceDocUrl}
-                       alt="Licence"
-                       width={120}
-                       style={{ display: 'block', marginTop: 8 }}
-                     />
-                   ))}
-
-                 <button
-                   type="button"
-                   disabled={verifyBusy}
-                   onClick={requestVerification}
-                   style={{ marginTop: 12 }}
-                 >
-                   {verifyBusy ? 'Sending…' : 'Verify my profile'}
-                 </button>
-                 <br />
-                 <br />
-               </>
-             )}
-
-
-           </>
-         )}
-
-
-      <button type="submit">Save Changes</button>
-    </form>
+    <Container maxWidth="md">
+      <Box sx={{ mt: 6, p: 4, bgcolor: '#FFFDE7', borderRadius: 3, boxShadow: 2 }}>
+        <Typography variant="h4" color="#5D4037" fontWeight={700} gutterBottom>Edit Your Profile</Typography>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            label="Full Name"
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Email"
+            value={currentUser.email}
+            fullWidth
+            margin="normal"
+            InputProps={{ readOnly: true }}
+          />
+          <TextField
+            label="Phone"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="location-label">Location</InputLabel>
+            <Select
+              labelId="location-label"
+              value={locId}
+              label="Location"
+              onChange={handleLocationChange}
+              required
+            >
+              <MenuItem value="">-- Select --</MenuItem>
+              {locations.map(loc => (
+                <MenuItem key={loc.id} value={loc.id}>{loc.name}, {loc.country}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {userRole === 'therapist' && (
+            <>
+              <TextField
+                label="Specialization"
+                value={specialization}
+                onChange={e => setSpecialization(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Bio"
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+                fullWidth
+                margin="normal"
+                multiline
+                rows={4}
+              />
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="languages-label">Languages</InputLabel>
+                <Select
+                  labelId="languages-label"
+                  multiple
+                  value={languageIds}
+                  onChange={e => setLanguageIds(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                  renderValue={selected => selected.map(id => {
+                    const lang = languages.find(l => l.id === id);
+                    return lang ? lang.langName : '';
+                  }).join(', ')}
+                  label="Languages"
+                  sx={{ minHeight: 56 }}
+                >
+                  {languages.map(lang => (
+                    <MenuItem key={lang.id} value={lang.id}>{lang.langName}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                label="Session Cost (USD)"
+                type="number"
+                value={sessionCost}
+                onChange={e => setSessionCost(parseFloat(e.target.value))}
+                fullWidth
+                margin="normal"
+              />
+              <Box sx={{ my: 2 }}>
+                <Typography variant="subtitle2">Profile Picture</Typography>
+                {previewUrl && (
+                  <img src={previewUrl} alt="preview" width={80} style={{ display: 'block', marginBottom: 8 }} />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const f = e.target.files[0];
+                    setFile(f);
+                    setPreviewUrl(URL.createObjectURL(f));
+                  }}
+                />
+              </Box>
+              <Box sx={{ my: 2 }}>
+                <Chip
+                  label={
+                    verificationState === 'VERIFIED'
+                      ? '✔ Profile verified'
+                      : verificationState === 'PENDING'
+                      ? '⏳ Verification request pending'
+                      : '⚠️ Profile not verified'
+                  }
+                  color={
+                    verificationState === 'VERIFIED'
+                      ? 'success'
+                      : verificationState === 'PENDING'
+                      ? 'warning'
+                      : 'error'
+                  }
+                  sx={{ fontWeight: 600, mb: 1 }}
+                />
+                {verificationState === 'UNVERIFIED' && (
+                  <Box sx={{ mt: 2 }}>
+                    <Alert severity="warning" sx={{ mb: 2 }}>
+                      Your profile is not verified yet. Clients won't see you in search results until an admin approves it.
+                    </Alert>
+                    <Typography variant="subtitle2">Upload Licence (PDF/ image)</Typography>
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={e => setLicenceFile(e.target.files[0])}
+                    />
+                    {licenceDocUrl &&
+                      (licenceDocUrl.toLowerCase().endsWith('.pdf') ? (
+                        <Typography sx={{ mt: 1 }}>
+                          Current file:&nbsp;
+                          <a href={licenceDocUrl} target="_blank" rel="noreferrer">
+                            uploaded PDF
+                          </a>
+                        </Typography>
+                      ) : (
+                        <img
+                          src={licenceDocUrl}
+                          alt="Licence"
+                          width={120}
+                          style={{ display: 'block', marginTop: 8 }}
+                        />
+                      ))}
+                    <Button
+                      type="button"
+                      disabled={verifyBusy}
+                      onClick={requestVerification}
+                      sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}
+                    >
+                      {verifyBusy ? 'Sending…' : 'Verify my profile'}
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+            </>
+          )}
+          <Button type="submit" variant="contained" sx={{ mt: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}>
+            Save Changes
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 }

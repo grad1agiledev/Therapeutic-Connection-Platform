@@ -1,94 +1,79 @@
 import React, { useState } from 'react';
-import './TherapistCard.css';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import StarIcon from '@mui/icons-material/Star';
 
 const TherapistCard = ({ therapist, onViewProfile }) => {
   const [showDetails, setShowDetails] = useState(false);
-
-  const rating      = Number(therapist.rating      ?? 0);
+  const rating = Number(therapist.rating ?? 0);
   const sessionCost = Number(therapist.sessionCost ?? 0);
-  const toggleDetails = () => {
-    setShowDetails(!showDetails);
-  };
-
-  const handleViewProfile = () => {
-    if (onViewProfile) {
-      onViewProfile(therapist.id);
-    }
-  };
+  const toggleDetails = () => setShowDetails(!showDetails);
+  const handleViewProfile = () => onViewProfile && onViewProfile(therapist.id);
 
   return (
-    <div className="therapist-card">
-      <div className="therapist-card-header">
-        <img 
-          src={therapist.profilePicture} 
-          alt={`${therapist.name} profile photo`} 
-          className="therapist-image"
-        />
-        <div className="therapist-basic-info">
-          <h2 className="therapist-name">{therapist.user.fullName}</h2>
-          <p className="therapist-specialization">{therapist.specialization}</p>
-          <div className="therapist-rating">
-            <span className="star">★</span> {therapist.rating.toFixed(1)}
-          </div>
-          {therapist.verified && (
-            <div className="verified-badge">
-              <span className="verified-icon">✓</span> Verified
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="therapist-info">
-
-    <div className="therapist-location">
-      <strong>Location:</strong>{" "}
-      {therapist.location?.name && therapist.location?.country
-        ? `${therapist.location.name}, ${therapist.location.country}`
-        : "Not specified"}
-    </div>
-        <div className="therapist-languages">
-          <strong>Languages:</strong> {''}{Array.isArray(therapist.languages) && therapist.languages.length
-                                        ? therapist.languages.map(l => l.langName).join(', ')
-                                        : 'Not specified'}
-        </div>
-
-        <div className="therapist-session-cost">
-          <strong>Session Cost:</strong> ${therapist.sessionCost.toFixed(2)}
-        </div>
-      </div>
-
-      {showDetails ? (
-        <div className="therapist-details">
-          <h3>About</h3>
-          <p className="therapist-bio">{therapist.bio}</p>
-          <button 
-            className="details-button" 
-            onClick={toggleDetails}
-          >
-            Show Less
-          </button>
-        </div>
-      ) : (
-        <button 
-          className="details-button" 
-          onClick={toggleDetails}
+    <Card sx={{ borderRadius: 3, boxShadow: 3, bgcolor: '#FFFDE7', p: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Avatar
+          src={therapist.profilePicture}
+          alt={therapist.user.fullName}
+          sx={{ width: 64, height: 64, mr: 2, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 700 }}
         >
-          Show More
-        </button>
-      )}
-      
-      <div className="therapist-actions">
-        <button 
-          className="action-button view-profile"
-          onClick={handleViewProfile}
-        >
+          {therapist.user.fullName?.[0]}
+        </Avatar>
+        <Box>
+          <Typography variant="h6" fontWeight={700} color="#5D4037">
+            {therapist.user.fullName}
+          </Typography>
+          <Typography variant="subtitle2" color="text.secondary">
+            {therapist.specialization}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+            <StarIcon sx={{ color: '#FFD54F', fontSize: 20, mr: 0.5 }} />
+            <Typography variant="body2" color="text.secondary">
+              {rating.toFixed(1)}
+            </Typography>
+            {therapist.verified && (
+              <Chip icon={<VerifiedIcon sx={{ color: '#388e3c' }} />} label="Verified" size="small" sx={{ ml: 1, bgcolor: '#E8F5E9', color: '#388e3c' }} />
+            )}
+          </Box>
+        </Box>
+      </Box>
+      <CardContent sx={{ pt: 0 }}>
+        <Typography variant="body2" color="text.secondary">
+          <strong>Location:</strong> {therapist.location?.name && therapist.location?.country ? `${therapist.location.name}, ${therapist.location.country}` : 'Not specified'}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          <strong>Languages:</strong> {Array.isArray(therapist.languages) && therapist.languages.length ? therapist.languages.map(l => l.langName).join(', ') : 'Not specified'}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          <strong>Session Cost:</strong> ${sessionCost.toFixed(2)}
+        </Typography>
+        {showDetails && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" color="#5D4037" fontWeight={600}>About</Typography>
+            <Typography variant="body2" color="text.secondary">{therapist.bio}</Typography>
+          </Box>
+        )}
+      </CardContent>
+      <CardActions sx={{ justifyContent: 'space-between' }}>
+        <Button size="small" onClick={toggleDetails} sx={{ color: '#8D6E63' }}>
+          {showDetails ? 'Show Less' : 'Show More'}
+        </Button>
+        <Button variant="contained" size="small" onClick={handleViewProfile} sx={{ bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}>
           View Profile
-        </button>
-        <button className="action-button book-appointment" disabled>
+        </Button>
+        <Button size="small" disabled sx={{ color: '#BDBDBD' }}>
           Book Appointment (Login Required)
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardActions>
+    </Card>
   );
 };
 
