@@ -1,30 +1,32 @@
-package com.project.Therapeutic_Connection_Platform.configs;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import jakarta.annotation.PostConstruct;
+import java.util.Base64;
 
 @Configuration
-public class FirebaseConfiguration {
+public class FirebaseConfig {
 
     @Value("${FIREBASE_CONFIG_FILE_PATH}")
-    private String firebaseConfigFilePath;
+    private String firebaseConfigBase64;
 
     @PostConstruct
-    public void init() throws IOException {
-        try (InputStream firebaseServiceKey = new FileInputStream(firebaseConfigFilePath))
-        {
-            FirebaseOptions firebaseOptions = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(firebaseServiceKey)).build();
+    public void initialize() throws IOException {
+        byte[] decodedBytes = Base64.getDecoder().decode(firebaseConfigBase64);
+        ByteArrayInputStream serviceAccount = new ByteArrayInputStream(decodedBytes);
 
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(firebaseOptions);
-            }
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .build();
+
+        if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseApp.initializeApp(options);
         }
     }
 }
+
