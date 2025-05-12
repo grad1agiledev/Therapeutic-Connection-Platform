@@ -65,6 +65,24 @@ public class TherapistController {
         return ResponseEntity.ok(therapist);
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
+        Therapist therapist = therapistService.getTherapistById(id);
+        if (therapist == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(therapist);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Therapist>> searchTherapists(
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) List<String> languages) {
+        List<Therapist> therapists = therapistService.searchTherapists(specialization, location, languages);
+        return ResponseEntity.ok(therapists);
+    }
+
     /*
     Updating the all therapists info if accessed a request
      */
