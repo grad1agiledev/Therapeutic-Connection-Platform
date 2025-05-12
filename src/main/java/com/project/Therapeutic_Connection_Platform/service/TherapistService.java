@@ -62,5 +62,38 @@ public class TherapistService {
         return therapistRepository.save(therapist);
     }
 
+    public Therapist getTherapistById(String id) {
+        try {
+            Long therapistId = Long.parseLong(id);
+            return therapistRepository.findById(therapistId).orElse(null);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    public List<Therapist> searchTherapists(String specialization, String location, List<String> languages) {
+        List<Therapist> allTherapists = therapistRepository.findAll();
+        
+        return allTherapists.stream()
+            .filter(therapist -> {
+                boolean matchesSpecialization = specialization == null || 
+                    (therapist.getSpecialization() != null && 
+                     therapist.getSpecialization().toLowerCase().contains(specialization.toLowerCase()));
+                
+                boolean matchesLocation = location == null || 
+                    (therapist.getLocation() != null && 
+                     therapist.getLocation().getName().toLowerCase().contains(location.toLowerCase()));
+                
+                boolean matchesLanguages = languages == null || languages.isEmpty() || 
+                    (therapist.getLanguages() != null && 
+                     therapist.getLanguages().stream()
+                         .anyMatch(lang -> languages.stream()
+                             .anyMatch(searchLang -> lang.getLangName().toLowerCase()
+                                 .contains(searchLang.toLowerCase()))));
+                
+                return matchesSpecialization && matchesLocation && matchesLanguages;
+            })
+            .collect(Collectors.toList());
+    }
 
 } 
