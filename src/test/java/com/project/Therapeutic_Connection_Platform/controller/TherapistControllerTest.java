@@ -1,6 +1,10 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
+import com.project.Therapeutic_Connection_Platform.jpaRepos.LocationRepository;
+import com.project.Therapeutic_Connection_Platform.model.Language;
+import com.project.Therapeutic_Connection_Platform.model.Location;
 import com.project.Therapeutic_Connection_Platform.model.Therapist;
+import com.project.Therapeutic_Connection_Platform.model.User;
 import com.project.Therapeutic_Connection_Platform.service.TherapistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +27,9 @@ class TherapistControllerTest {
     @Mock
     private TherapistService therapistService;
 
+    @Mock
+    private LocationRepository locationRepository;
+
     @InjectMocks
     private TherapistController therapistController;
 
@@ -32,32 +39,8 @@ class TherapistControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
-//        therapist1 = new Therapist(
-//                "1",
-//                "Dr. Ayşe Yılmaz",
-//                "Anxiety, Depression",
-//                "Istanbul",
-//                Arrays.asList("Turkish", "English"),
-//                4.8,
-//                500.0,
-//                "https://randomuser.me/api/portraits/women/1.jpg",
-//                "Clinical psychologist with 10 years of experience. Specialized in anxiety and depression treatment.",
-//                true
-//        );
-//
-//        therapist2 = new Therapist(
-//                "2",
-//                "Dr. Mehmet Kaya",
-//                "Family Therapy, Couples Therapy",
-//                "Ankara",
-//                Collections.singletonList("Turkish"),
-//                4.5,
-//                450.0,
-//                "https://randomuser.me/api/portraits/men/2.jpg",
-//                "Expert psychologist with 15 years of experience in family and couples therapy.",
-//                true
-//        );
+        therapist1 = createTestTherapist(1L);
+        therapist2 = createTestTherapist(2L);
     }
 
     @Test
@@ -86,7 +69,7 @@ class TherapistControllerTest {
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("1", response.getBody().getId());
+        assertEquals(1L, response.getBody().getId());
         verify(therapistService, times(1)).getTherapistById("1");
     }
 
@@ -119,7 +102,23 @@ class TherapistControllerTest {
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        //assertEquals("Dr. Ayşe Yılmaz", response.getBody().get(0).getName());
+        assertEquals("Anxiety", response.getBody().get(0).getSpecialization());
         verify(therapistService, times(1)).searchTherapists(specialization, location, languages);
+    }
+
+    private Therapist createTestTherapist(Long id) {
+        Therapist therapist = new Therapist();
+        therapist.setId(id);
+        therapist.setSpecialization(id == 1L ? "Anxiety" : "Depression");
+        
+        Location location = new Location();
+        location.setName("Istanbul");
+        therapist.setLocation(location);
+        
+        Language language = new Language();
+        language.setLangName(id == 1L ? "German" : "English");
+        therapist.setLanguages(Collections.singletonList(language));
+        
+        return therapist;
     }
 } 
