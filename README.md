@@ -1,190 +1,223 @@
 # Therapeutic Connection Platform
 
-## Özellikler
+![Logo](logo.png)
 
-- Terapist profillerini görüntüleme
-- Terapist arama ve filtreleme
-- Hasta yorumları ve değerlendirmeleri
-- Yönetici paneli ile yorum onaylama/reddetme
-- Randevu sistemi
-- Ödeme entegrasyonu
-- Yönetici panelinde Azure veritabanından kullanıcı listesi görüntüleme
-- Profile sayfasında Türkiye şehirleri dropdown seçeneği
+## Overview
 
-## Kurulum
+The Therapeutic Connection Platform is a comprehensive web application designed to connect patients with therapists. This platform facilitates seamless interaction between patients and therapists, offering appointment scheduling, payment processing, and review management capabilities.
 
-1. Projeyi klonlayın:
-```bash
-git clone https://github.com/yourusername/Therapeutic-Connection-Platform.git
-```
+## Features
 
-2. Backend'i başlatın:
-```bash
-cd Therapeutic-Connection-Platform
-./gradlew bootrun
-```
+- **Therapist Profiles**: View detailed profiles of therapists including their specialties, experience, and availability
+- **Search & Filtering**: Find therapists based on various criteria like specialty, location, and availability
+- **Patient Reviews**: Read and leave reviews for therapists to help others make informed decisions
+- **Review Management**: Admin panel for approving/rejecting patient reviews
+- **Appointment System**: Schedule, reschedule, and cancel therapy appointments
+- **Payment Integration**: Secure payment processing via Stripe API
+- **User Management**: Admin panel to view and manage users from the Azure database
+- **Location Selection**: Support for selecting from all 81 cities in Turkey for profile information
 
-3. Frontend'i başlatın:
-```bash
-cd ui_react_therapeutic_platform
-npm install
-npm start
-```
+## Architecture
 
-## Yönetici Paneli
+![UML Diagram](UML_diagram.png)
 
-Yönetici paneli, hasta yorumlarını yönetmek için kullanılır. Yöneticiler:
+The platform follows a modern client-server architecture:
 
-- Onay bekleyen yorumları görüntüleyebilir
-- Yorumları onaylayabilir veya reddedebilir
-- Yorumlara açıklama ekleyebilir
-- Azure veritabanındaki tüm kullanıcıları listeleyebilir ve filtreleyebilir
+- **Frontend**: React.js for a responsive and interactive user interface
+- **Backend**: Spring Boot for a robust and scalable API
+- **Database**: Azure MySQL for data persistence
+- **Authentication**: Firebase Authentication for secure user management
+- **Payment Processing**: Stripe API for handling transactions
+- **Styling**: Material-UI and custom CSS for a polished user experience
 
-Yönetici paneline erişmek için:
-1. Ana sayfadaki "Yorum Yönetimi" linkine tıklayın
-2. Onay bekleyen yorumları görüntüleyin
-3. Her yorum için "Onayla" veya "Reddet" seçeneğini kullanın
-4. İsteğe bağlı olarak yönetici yorumu ekleyin
+## Installation & Setup
 
-Kullanıcı listesine erişmek için:
-1. Yönetici hesabıyla giriş yapın
-2. Üst menüdeki "Terapistler" linkine tıklayın
-3. Terapistleri görüntüleyin, arama çubuğunu kullanarak filtreleme yapabilirsiniz
+### Prerequisites
 
-**Not:** Terapist listesi sayfası sadece "therapist" rolüne sahip kullanıcıları gösterir.
+- Java 11 or higher
+- Node.js 14.x or higher
+- npm 6.x or higher
+- MySQL database (or Azure MySQL instance)
+- Firebase project with Authentication enabled
+- Stripe account for payment processing
 
-## Teknolojiler
+### Backend Setup
 
-- Backend: Spring Boot
-- Frontend: React.js
-- Veritabanı: Azure MySQL
-- Kimlik Doğrulama: Firebase Authentication
-- Ödeme: Stripe API
-- Stil: Material-UI, CSS
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/Therapeutic-Connection-Platform.git
+   cd Therapeutic-Connection-Platform
+   ```
 
-## Önemli Notlar
+2. Configure environment variables by copying `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
 
-Therapist modelinde `isVirtual` alanı, primitive `boolean` yerine nesne tipteki `Boolean` olarak tanımlanmalıdır. Bu şekilde null değerler kabul edilebilir ve veritabanından null bir değer okunduğunda Java tarafında hata alınmaz.
+3. Update the `.env` file with your credentials:
+   ```properties
+   # Stripe Configuration
+   STRIPE_API_KEY=your_stripe_api_key_here
+   STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
 
-```java
-@Column(name = "is_virtual")
-private Boolean isVirtual;
-```
+   # Firebase Configuration
+   FIREBASE_CONFIG_FILE_PATH=path_to_your_firebase_config_json
+   ```
 
-## Lisans
+4. Start the backend server:
+   ```bash
+   ./gradlew bootrun
+   ```
 
-MIT
+### Frontend Setup
 
-## Environment Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd ui_react_therapeutic_platform
+   ```
 
-1. Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-2. Update the `.env` file with your credentials:
-```properties
-# Stripe Configuration
-STRIPE_API_KEY=your_stripe_api_key_here
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
+3. Start the development server:
+   ```bash
+   npm start
+   ```
 
-# Firebase Configuration
-FIREBASE_CONFIG_FILE_PATH=path_to_your_firebase_config_json
-```
+The application should now be running at http://localhost:3000
 
-## Test Cards
+## API Endpoints
 
-For testing the payment system, you can use Stripe's test cards:
+### Authentication
 
-- **Success Card**: 4242 4242 4242 4242
-- **Requires Authentication**: 4000 0025 0000 3155
-- **Decline**: 4000 0000 0000 0002
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Log in an existing user
 
-## Available Endpoints
+### Therapists
 
-The following payment-related API endpoints are available:
+- `GET /api/therapists` - Get all therapists
+- `GET /api/therapists/{id}` - Get therapist by ID
+- `POST /api/therapists` - Create a new therapist profile
+- `PUT /api/therapists/{id}` - Update therapist profile
+- `DELETE /api/therapists/{id}` - Delete therapist profile
+
+### Reviews
+
+- `GET /api/reviews` - Get all reviews
+- `GET /api/reviews/{id}` - Get review by ID
+- `POST /api/reviews` - Create a new review
+- `PUT /api/reviews/{id}` - Update review
+- `DELETE /api/reviews/{id}` - Delete review
+- `PUT /api/reviews/{id}/approve` - Approve a review
+- `PUT /api/reviews/{id}/reject` - Reject a review
+
+### Appointments
+
+- `GET /api/appointments` - Get all appointments
+- `GET /api/appointments/{id}` - Get appointment by ID
+- `POST /api/appointments` - Create a new appointment
+- `PUT /api/appointments/{id}` - Update appointment
+- `DELETE /api/appointments/{id}` - Cancel appointment
+
+### Payment
 
 - `POST /api/payment/create-customer` - Create a new Stripe customer
 - `POST /api/payment/create-payment-intent` - Create a payment intent
 - `POST /api/payment/confirm-payment-intent/{id}` - Confirm a payment intent
 - `POST /api/payment/cancel-payment-intent/{id}` - Cancel a payment intent
 
-All endpoints use JSON for requests and responses.
+## Admin Panel
 
-## Security Notes
+The admin panel provides administrative functionality:
 
-- Never commit the `.env` file or Firebase configuration JSON to version control
-- Always use environment variables for sensitive credentials
-- Keep your API keys and service account files secure
-- Store Firebase configuration JSON in a secure location
-- Rotate credentials if they are compromised
+- **Review Management**: Approve or reject patient reviews
+- **User Management**: View and filter users from Azure database
+- **Therapist Management**: Manage therapist profiles
 
-## Branch: redesign/ui-overhaul
+To access the admin panel:
+1. Log in with an admin account
+2. Navigate to the Admin Dashboard
+3. Use the different sections to manage reviews, users, or therapists
 
-Bu branch, platformun kullanıcı arayüzünü (UI) baştan sona modern ve kullanıcı dostu bir şekilde yeniden tasarlamak için oluşturulmuştur. Tüm UI değişiklikleri ve yeni tasarım bu branch üzerinde geliştirilecektir.
+## Testing
 
-## View Users Table from Firestore
+### Test Cards for Stripe
 
-To print the Users table from Firestore in your terminal:
+For testing the payment system, use Stripe's test cards:
+
+- **Success Card**: 4242 4242 4242 4242
+- **Requires Authentication**: 4000 0025 0000 3155
+- **Decline**: 4000 0000 0000 0002
+
+### Running Tests
+
+To run backend tests:
+```bash
+./gradlew test
+```
+
+To run frontend tests:
+```bash
+cd ui_react_therapeutic_platform
+npm test
+```
+
+## Firestore User Management
+
+To view users from Firestore in your terminal:
 
 1. Create and activate a Python virtual environment:
    ```bash
    python -m venv venv
    source venv/bin/activate
    ```
+   
 2. Install dependencies:
    ```bash
    pip install firebase-admin
    ```
-3. Make sure your `.env` file contains the correct path to your Firebase config JSON file:
-   ```env
-   FIREBASE_CONFIG_FILE_PATH=therapeutic-connection-firebase-adminsdk-fbsvc-cf1d07720f.json
-   ```
-4. Enable the Firestore API for your project if you haven't already:
-   https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=therapeutic-connection
-5. Run the script:
+   
+3. Set up your Firebase config in `.env`
+   
+4. Run the script:
    ```bash
    python view_users.py
    ```
 
-This will print all users in the `users` collection in your Firestore database.
+## Security Notes
 
-## List All Users from Backend (PostgreSQL)
+- Never commit the `.env` file or Firebase configuration JSON to version control
+- Always use environment variables for sensitive credentials
+- Keep your API keys and service account files secure
+- Rotate credentials if they are compromised
 
-After logging in, you can print all users in the backend PostgreSQL users table with the following steps:
+## Recent Updates
 
-1. Make sure your backend is running.
-2. Use this Python script to print all users:
+### 2024-07-11: Browser Tab Title and Logo Update
+- Changed browser tab title from "React App" to "Therapeutic Connection Platform"
+- Updated application favicon and logo visuals with new design
+- Updated app manifest naming to "Therapeutic Connection Platform"
 
-```python
-import requests
+### 2024-07-09: Added Turkey Cities to Profile Page
+- Added all 81 cities in Turkey to the location dropdown in Edit Profile page
+- Easy selection of Turkey cities
+- When a city is selected, the address is automatically saved in "City, Turkey" format
 
-response = requests.get('http://localhost:8080/api/users/all')
-users = response.json()
-print("\nUsers Table:")
-print("-" * 50)
-for user in users:
-    print(f"ID: {user['id']}")
-    print(f"Firebase UID: {user['firebaseUid']}")
-    print(f"Full Name: {user['fullName']}")
-    print(f"Email: {user['email']}")
-    print(f"Phone: {user['phone']}")
-    print(f"Address: {user['address']}")
-    print(f"Role: {user['role']}")
-    print(f"Date Created: {user['dateCreated']}")
-    print("-" * 50)
+## Development Notes
+
+When working with the Therapist model, note that the `isVirtual` field should be defined as object-type `Boolean` rather than primitive `boolean` to handle null values properly:
+
+```java
+@Column(name = "is_virtual")
+private Boolean isVirtual;
 ```
 
-This will print all users in the users table after a successful login.
+## License
 
-## Güncellemeler
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 2024-07-11: Sekme Başlığı ve Logo Güncellemesi
-- Tarayıcı sekmesindeki başlık "React App" yerine "Therapeutic Connection Platform" olarak değiştirildi
-- Uygulamanın favicon ve logo görselleri yeni tasarımla güncellendi
-- Uygulama manifest dosyasında isimlendirme "Therapeutic Connection Platform" olarak güncellendi
+## Contact
 
-### 2024-07-09: Profil Sayfasına Türkiye Şehirleri Eklendi
-- Edit Profile sayfasındaki location dropdown'una Türkiye'deki 81 il eklendi
-- Türkiye şehirlerini kolay bir şekilde seçebilme özelliği
-- Şehir seçildiğinde adres otomatik olarak "Şehir, Turkey" formatında kaydedilir
+For questions or support, please contact the development team at [example@example.com](mailto:example@example.com).
