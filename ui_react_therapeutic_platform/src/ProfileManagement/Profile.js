@@ -16,6 +16,18 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import config from '../config';
 
+// Turkish cities
+const TURKISH_CITIES = [
+  'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Amasya', 'Ankara', 'Antalya', 'Artvin', 'Aydın', 'Balıkesir',
+  'Bilecik', 'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa', 'Çanakkale', 'Çankırı', 'Çorum', 'Denizli',
+  'Diyarbakır', 'Edirne', 'Elazığ', 'Erzincan', 'Erzurum', 'Eskişehir', 'Gaziantep', 'Giresun', 'Gümüşhane', 'Hakkari',
+  'Hatay', 'Isparta', 'Mersin', 'İstanbul', 'İzmir', 'Kars', 'Kastamonu', 'Kayseri', 'Kırklareli', 'Kırşehir',
+  'Kocaeli', 'Konya', 'Kütahya', 'Malatya', 'Manisa', 'Kahramanmaraş', 'Mardin', 'Muğla', 'Muş', 'Nevşehir',
+  'Niğde', 'Ordu', 'Rize', 'Sakarya', 'Samsun', 'Siirt', 'Sinop', 'Sivas', 'Tekirdağ', 'Tokat',
+  'Trabzon', 'Tunceli', 'Şanlıurfa', 'Uşak', 'Van', 'Yozgat', 'Zonguldak', 'Aksaray', 'Bayburt', 'Karaman',
+  'Kırıkkale', 'Batman', 'Şırnak', 'Bartın', 'Ardahan', 'Iğdır', 'Yalova', 'Karabük', 'Kilis', 'Osmaniye', 'Düzce'
+];
+
 // Top 20 languages in the world
 const TOP_LANGUAGES = [
   { id: 1, langName: 'English' },
@@ -160,9 +172,16 @@ export default function Profile() {
   const handleLocationChange = e => {
     const newId = e.target.value;
     setLocId(newId);
-    const loc = locations.find(l => l.id === parseInt(newId, 10));
-    if (loc) {
-      setAddress(`${loc.name}, ${loc.country}`);
+    
+    // Check if the value is a number (location id) or a string (city name)
+    if (!isNaN(parseInt(newId, 10))) {
+      const loc = locations.find(l => l.id === parseInt(newId, 10));
+      if (loc) {
+        setAddress(`${loc.name}, ${loc.country}`);
+      }
+    } else {
+      // Handle Turkey cities directly
+      setAddress(`${newId}, Turkey`);
     }
   };
 
@@ -200,11 +219,14 @@ export default function Profile() {
         picUrl = url;
       }
       if (userRole === 'therapist') {
+        // Check if locId is a Turkish city
+        const isTurkishCity = TURKISH_CITIES.includes(locId);
+        
         const thPayload = {
           specializations,
           bio,
           sessionCost,
-          locationId: locId,
+          locationId: isTurkishCity ? null : locId, // Send null if it's a Turkish city
           profilePicture: picUrl,
           languageIds,
           isVirtual
@@ -269,6 +291,14 @@ export default function Profile() {
               <MenuItem value="">-- Select --</MenuItem>
               {locations.map(loc => (
                 <MenuItem key={loc.id} value={loc.id}>{loc.name}, {loc.country}</MenuItem>
+              ))}
+              <MenuItem disabled sx={{ opacity: 0.6, mt: 1, fontWeight: 'bold' }}>
+                --- Turkey Cities ---
+              </MenuItem>
+              {TURKISH_CITIES.map((city) => (
+                <MenuItem key={`city-${city}`} value={city}>
+                  {city}, Turkey
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
