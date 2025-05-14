@@ -106,19 +106,53 @@ class TherapistControllerTest {
         verify(therapistService, times(1)).searchTherapists(specialization, location, languages);
     }
 
+    @Test
+    void searchTherapists_BySpecialization_ShouldReturnMatchingTherapists() {
+        // Given
+        List<Therapist> therapists = Arrays.asList(
+            createTestTherapist(1L),
+            createTestTherapist(2L)
+        );
+        when(therapistService.searchTherapists("Anxiety", null, null)).thenReturn(therapists);
+
+        // When
+        ResponseEntity<List<Therapist>> response = therapistController.searchTherapists("Anxiety", null, null);
+
+        // Then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertEquals("Anxiety", response.getBody().get(0).getSpecializations().get(0));
+    }
+
     private Therapist createTestTherapist(Long id) {
         Therapist therapist = new Therapist();
         therapist.setId(id);
-        therapist.setSpecializations(Collections.singletonList(id == 1L ? "Anxiety" : "Depression"));
-        
-        Location location = new Location();
-        location.setName("Istanbul");
-        therapist.setLocation(location);
-        
-        Language language = new Language();
-        language.setLangName(id == 1L ? "German" : "English");
-        therapist.setLanguages(Collections.singletonList(language));
-        
+        therapist.setUser(createTestUser(id));
+        therapist.setSpecializations(Arrays.asList(id == 1L ? "Anxiety" : "Depression"));
+        therapist.setLocation(createTestLocation(id));
+        therapist.setLanguages(Arrays.asList(createTestLanguage(id)));
         return therapist;
+    }
+
+    private User createTestUser(Long id) {
+        User user = new User();
+        user.setId(id);
+        user.setFullName("Test User " + id);
+        return user;
+    }
+
+    private Location createTestLocation(Long id) {
+        Location location = new Location();
+        location.setId(id);
+        location.setName("Istanbul");
+        return location;
+    }
+
+    private Language createTestLanguage(Long id) {
+        Language language = new Language();
+        language.setId(id);
+        language.setLangName(id == 1L ? "English" : "German");
+        return language;
     }
 } 

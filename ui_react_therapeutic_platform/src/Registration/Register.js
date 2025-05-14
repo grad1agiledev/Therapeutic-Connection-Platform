@@ -20,6 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
+import config from '../config';
 
 const turkishCities = [
   'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Amasya', 'Ankara', 'Antalya', 'Artvin', 'Aydın', 'Balıkesir',
@@ -91,7 +92,7 @@ function Register() {
     try {
       const userInfos = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userInfos.user.uid;
-      await fetch('http://localhost:8080/api/register', {
+      await fetch(`${config.API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

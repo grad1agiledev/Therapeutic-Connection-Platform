@@ -75,48 +75,55 @@ class TherapistServiceTest {
     }
 
     @Test
-    void searchTherapists_withSpecialization_shouldReturnMatchingTherapists() {
+    void searchTherapists_BySpecialization_ShouldReturnMatchingTherapists() {
         // Given
-        List<Therapist> therapists = createTestTherapists();
+        List<Therapist> therapists = Arrays.asList(
+            createTestTherapist(1L),
+            createTestTherapist(2L)
+        );
         when(therapistRepository.findAll()).thenReturn(therapists);
 
         // When
         List<Therapist> result = therapistService.searchTherapists("Anxiety", null, null);
 
         // Then
-        assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Anxiety", result.get(0).getSpecializations().get(0));
     }
 
     @Test
-    void searchTherapists_withLocation_shouldReturnMatchingTherapists() {
+    void searchTherapists_ByLocation_ShouldReturnMatchingTherapists() {
         // Given
-        List<Therapist> therapists = createTestTherapists();
+        List<Therapist> therapists = Arrays.asList(
+            createTestTherapist(1L),
+            createTestTherapist(2L)
+        );
         when(therapistRepository.findAll()).thenReturn(therapists);
 
         // When
         List<Therapist> result = therapistService.searchTherapists(null, "Istanbul", null);
 
         // Then
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(2, result.size()); // Both therapists are in Istanbul
         assertEquals("Istanbul", result.get(0).getLocation().getName());
+        assertEquals("Istanbul", result.get(1).getLocation().getName());
     }
 
     @Test
-    void searchTherapists_withLanguage_shouldReturnMatchingTherapists() {
+    void searchTherapists_ByLanguage_ShouldReturnMatchingTherapists() {
         // Given
-        List<Therapist> therapists = createTestTherapists();
+        List<Therapist> therapists = Arrays.asList(
+            createTestTherapist(1L),
+            createTestTherapist(2L)
+        );
         when(therapistRepository.findAll()).thenReturn(therapists);
 
         // When
-        List<Therapist> result = therapistService.searchTherapists(null, null, Collections.singletonList("German"));
+        List<Therapist> result = therapistService.searchTherapists(null, null, Arrays.asList("English"));
 
         // Then
-        assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("German", result.get(0).getLanguages().get(0).getLangName());
+        assertEquals("English", result.get(0).getLanguages().get(0).getLangName());
     }
 
     @Test
@@ -158,16 +165,29 @@ class TherapistServiceTest {
     private Therapist createTestTherapist(Long id) {
         Therapist therapist = new Therapist();
         therapist.setId(id);
-        therapist.setSpecializations(Collections.singletonList(id == 1L ? "Anxiety" : "Depression"));
-        
+        therapist.setUser(createTestUser(id));
+        therapist.setSpecializations(Arrays.asList(id == 1L ? "Anxiety" : "Depression"));
+        therapist.setLocation(createTestLocation(id));
+        therapist.setLanguages(Arrays.asList(createTestLanguage(id)));
+        return therapist;
+    }
+
+    private User createTestUser(Long id) {
+        User user = new User();
+        user.setId(id);
+        user.setFullName("Test User " + id);
+        return user;
+    }
+
+    private Location createTestLocation(Long id) {
         Location location = new Location();
         location.setName("Istanbul");
-        therapist.setLocation(location);
-        
+        return location;
+    }
+
+    private Language createTestLanguage(Long id) {
         Language language = new Language();
         language.setLangName(id == 1L ? "German" : "English");
-        therapist.setLanguages(Collections.singletonList(language));
-        
-        return therapist;
+        return language;
     }
 } 

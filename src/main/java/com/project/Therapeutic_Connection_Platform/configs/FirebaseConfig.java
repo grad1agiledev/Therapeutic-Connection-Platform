@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 @Configuration
-public class FirebaseConfig {
+public class FirebaseConfiguration {
 
     @Value("${FIREBASE_CONFIG_FILE_PATH}")
     private String firebaseConfigBase64;

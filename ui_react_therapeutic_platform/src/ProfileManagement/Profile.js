@@ -14,6 +14,7 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import config from '../config';
 
 // Top 20 languages in the world
 const TOP_LANGUAGES = [
@@ -95,13 +96,13 @@ export default function Profile() {
         const fd = new FormData();
         fd.append('file', licenceFile);
         const up = await fetch(
-          `http://localhost:8080/api/therapists/${currentUser.uid}/uploadLicence`,
+          `${config.API_URL}/api/therapists/${currentUser.uid}/uploadLicence`,
           { method: 'POST', body: fd }
         );
         licenceUrl = (await up.json()).url;
       }
       await fetch(
-        `http://localhost:8080/api/therapists/${currentUser.uid}/verify`,
+        `${config.API_URL}/api/therapists/${currentUser.uid}/verify`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -120,9 +121,9 @@ export default function Profile() {
   useEffect(() => {
     if (!currentUser) return;
     Promise.all([
-      fetch(`http://localhost:8080/api/users/${currentUser.uid}`).then(r => r.json()),
-      fetch('http://localhost:8080/api/locations').then(r => r.json()),
-      fetch('http://localhost:8080/api/languages').then(r => r.json())
+      fetch(`${config.API_URL}/api/users/${currentUser.uid}`).then(r => r.json()),
+      fetch(`${config.API_URL}/api/locations`).then(r => r.json()),
+      fetch(`${config.API_URL}/api/languages`).then(r => r.json())
     ])
       .then(([userData, locs, langs]) => {
         setFullName(userData.fullName);
@@ -133,7 +134,7 @@ export default function Profile() {
         );
         setLocations(locs);
         if (userRole === 'therapist') {
-          fetch(`http://localhost:8080/api/therapists/${currentUser.uid}`)
+          fetch(`${config.API_URL}/api/therapists/${currentUser.uid}`)
             .then(r => r.json())
             .then(th => {
               setSelectedLocation(th.location?.id || '');
@@ -172,7 +173,7 @@ export default function Profile() {
     try {
       const userPayload = { fullName, phone, address };
       const res1 = await fetch(
-        `http://localhost:8080/api/users/${currentUser.uid}`,
+        `${config.API_URL}/api/users/${currentUser.uid}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -188,7 +189,7 @@ export default function Profile() {
         const fd = new FormData();
         fd.append('file', file);
         const uploadRes = await fetch(
-          `http://localhost:8080/api/therapists/${currentUser.uid}/uploadPhoto`,
+          `${config.API_URL}/api/therapists/${currentUser.uid}/uploadPhoto`,
           { method: 'POST', body: fd }
         );
         if (!uploadRes.ok) {
@@ -209,7 +210,7 @@ export default function Profile() {
           isVirtual
         };
         const res2 = await fetch(
-          `http://localhost:8080/api/therapists/${currentUser.uid}`,
+          `${config.API_URL}/api/therapists/${currentUser.uid}`,
           {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

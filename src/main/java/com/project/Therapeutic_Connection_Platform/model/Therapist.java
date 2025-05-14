@@ -45,7 +45,7 @@ public class Therapist {
     @Column(name = "biography", columnDefinition = "TEXT")
     private String bio;
     @Column(name = "is_verified")
-    private boolean isVerified;
+    private Boolean isVerified;
 
     @Column(name = "is_virtual")
     private Boolean isVirtual;

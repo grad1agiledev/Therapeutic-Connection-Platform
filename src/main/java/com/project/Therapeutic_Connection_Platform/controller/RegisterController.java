@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
@@ -48,7 +48,7 @@ public class RegisterController {
         {
             Therapist therapist = new Therapist();
             therapist.setUser(user);
-            therapist.setSpecializations(List.of(""));
+            therapist.setSpecializations(new ArrayList<>());
             therapist.setProfilePicture("https://randomuser.me/api/portraits/men/1.jpg");
             therapist.setBio("");
             therapist.setSessionCost(0.0);
