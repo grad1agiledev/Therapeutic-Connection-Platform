@@ -104,8 +104,9 @@ class TherapistServiceTest {
         List<Therapist> result = therapistService.searchTherapists(null, "Istanbul", null);
 
         // Then
-        assertEquals(1, result.size());
+        assertEquals(2, result.size()); // Both therapists are in Istanbul
         assertEquals("Istanbul", result.get(0).getLocation().getName());
+        assertEquals("Istanbul", result.get(1).getLocation().getName());
     }
 
     @Test
