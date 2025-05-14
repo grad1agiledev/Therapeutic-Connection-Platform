@@ -86,7 +86,7 @@ class TherapistServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Anxiety", result.get(0).getSpecialization());
+        assertEquals("Anxiety", result.get(0).getSpecializations().get(0));
     }
 
     @Test
@@ -131,7 +131,7 @@ class TherapistServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Depression", result.get(0).getSpecialization());
+        assertEquals("Depression", result.get(0).getSpecializations().get(0));
         assertEquals("Istanbul", result.get(0).getLocation().getName());
     }
 
@@ -158,7 +158,7 @@ class TherapistServiceTest {
     private Therapist createTestTherapist(Long id) {
         Therapist therapist = new Therapist();
         therapist.setId(id);
-        therapist.setSpecialization(id == 1L ? "Anxiety" : "Depression");
+        therapist.setSpecializations(Collections.singletonList(id == 1L ? "Anxiety" : "Depression"));
         
         Location location = new Location();
         location.setName("Istanbul");

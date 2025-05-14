@@ -77,8 +77,9 @@ public class TherapistService {
         return allTherapists.stream()
             .filter(therapist -> {
                 boolean matchesSpecialization = specialization == null || 
-                    (therapist.getSpecialization() != null && 
-                     therapist.getSpecialization().toLowerCase().contains(specialization.toLowerCase()));
+                    (therapist.getSpecializations() != null && 
+                     therapist.getSpecializations().stream()
+                         .anyMatch(spec -> spec.toLowerCase().contains(specialization.toLowerCase())));
                 
                 boolean matchesLocation = location == null || 
                     (therapist.getLocation() != null && 

@@ -102,14 +102,14 @@ class TherapistControllerTest {
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        assertEquals("Anxiety", response.getBody().get(0).getSpecialization());
+        assertEquals("Anxiety", response.getBody().get(0).getSpecializations().get(0));
         verify(therapistService, times(1)).searchTherapists(specialization, location, languages);
     }
 
     private Therapist createTestTherapist(Long id) {
         Therapist therapist = new Therapist();
         therapist.setId(id);
-        therapist.setSpecialization(id == 1L ? "Anxiety" : "Depression");
+        therapist.setSpecializations(Collections.singletonList(id == 1L ? "Anxiety" : "Depression"));
         
         Location location = new Location();
         location.setName("Istanbul");

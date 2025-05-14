@@ -48,7 +48,7 @@ public class Therapist {
     private boolean isVerified;
 
     @Column(name = "is_virtual")
-    private boolean isVirtual;
+    private Boolean isVirtual;
 
     @Column(name="licence_number")
     private String licenceNumber;
@@ -166,11 +166,11 @@ public class Therapist {
         isVerified = verified;
     }
 
-    public boolean isVirtual() {
+    public Boolean isVirtual() {
         return isVirtual;
     }
 
-    public void setVirtual(boolean virtual) {
+    public void setVirtual(Boolean virtual) {
         isVirtual = virtual;
     }
 

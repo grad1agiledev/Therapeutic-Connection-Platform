@@ -1,0 +1,32 @@
+.user-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.user-filter-container {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.user-sort-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .user-sort-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+} 
