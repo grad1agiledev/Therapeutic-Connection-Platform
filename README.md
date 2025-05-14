@@ -179,6 +179,11 @@ This will print all users in the users table after a successful login.
 
 ## Güncellemeler
 
+### 2024-07-11: Sekme Başlığı ve Logo Güncellemesi
+- Tarayıcı sekmesindeki başlık "React App" yerine "Therapeutic Connection Platform" olarak değiştirildi
+- Uygulamanın favicon ve logo görselleri yeni tasarımla güncellendi
+- Uygulama manifest dosyasında isimlendirme "Therapeutic Connection Platform" olarak güncellendi
+
 ### 2024-07-09: Profil Sayfasına Türkiye Şehirleri Eklendi
 - Edit Profile sayfasındaki location dropdown'una Türkiye'deki 81 il eklendi
 - Türkiye şehirlerini kolay bir şekilde seçebilme özelliği
