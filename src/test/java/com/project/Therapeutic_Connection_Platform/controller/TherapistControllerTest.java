@@ -102,7 +102,7 @@ class TherapistControllerTest {
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        assertEquals("Anxiety", response.getBody().get(0).getSpecialization());
+        assertEquals("Anxiety", response.getBody().get(0).getSpecializations().get(0));
         verify(therapistService, times(1)).searchTherapists(specialization, location, languages);
     }
 

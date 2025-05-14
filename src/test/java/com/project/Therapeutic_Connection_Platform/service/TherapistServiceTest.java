@@ -137,7 +137,7 @@ class TherapistServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Depression", result.get(0).getSpecialization());
+        assertEquals("Depression", result.get(0).getSpecializations().get(0));
         assertEquals("Istanbul", result.get(0).getLocation().getName());
     }
 
