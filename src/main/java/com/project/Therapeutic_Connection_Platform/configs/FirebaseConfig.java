@@ -1,3 +1,5 @@
+package com.project.Therapeutic_Connection_Platform.configs;
+
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -10,7 +12,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 @Configuration
-public class FirebaseConfiguration {
+public class FirebaseConfig {
 
     @Value("${FIREBASE_CONFIG_FILE_PATH}")
     private String firebaseConfigBase64;
