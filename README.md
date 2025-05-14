@@ -9,6 +9,7 @@
 - Randevu sistemi
 - Ödeme entegrasyonu
 - Yönetici panelinde Azure veritabanından kullanıcı listesi görüntüleme
+- Profile sayfasında Türkiye şehirleri dropdown seçeneği
 
 ## Kurulum
 
@@ -175,3 +176,10 @@ for user in users:
 ```
 
 This will print all users in the users table after a successful login.
+
+## Güncellemeler
+
+### 2024-07-09: Profil Sayfasına Türkiye Şehirleri Eklendi
+- Edit Profile sayfasındaki location dropdown'una Türkiye'deki 81 il eklendi
+- Türkiye şehirlerini kolay bir şekilde seçebilme özelliği
+- Şehir seçildiğinde adres otomatik olarak "Şehir, Turkey" formatında kaydedilir
