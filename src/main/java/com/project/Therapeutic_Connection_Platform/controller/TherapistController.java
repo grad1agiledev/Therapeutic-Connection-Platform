@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,9 @@ public class TherapistController {
 
     private final TherapistService therapistService;
     private final LocationRepository locationRepo;
+
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
 
     @Autowired private LanguageRepository languageRepo;
     @Autowired
@@ -138,8 +142,7 @@ public class TherapistController {
         }
 
         // absolute path creating for the db record
-        String url = "http://localhost:8080/uploads/" + filename;
-
+        String url = baseUrl + "/uploads/" + filename;
 
         t.setProfilePicture(url);
         therapistService.saveTherapist(t);
@@ -186,7 +189,7 @@ public class TherapistController {
             Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        String url = "http://localhost:8080/uploads/licences/" + filename;
+        String url = baseUrl + "/uploads/licences/" + filename;
         return ResponseEntity.ok(Map.of("url", url));
     }
 

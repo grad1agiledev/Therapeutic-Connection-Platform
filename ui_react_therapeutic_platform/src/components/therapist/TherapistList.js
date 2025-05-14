@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import { auth, db } from '../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import axios from 'axios';
+import config from '../../config';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);
@@ -34,7 +35,7 @@ const TherapistList = () => {
     const fetchTherapists = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8080/api/therapists');
+        const response = await axios.get(`${config.API_URL}/api/therapists`);
         setTherapists(response.data);
         setFilteredTherapists(sortTherapists(response.data, sortConfig));
         setLoading(false);
@@ -85,7 +86,7 @@ const TherapistList = () => {
       if (newFilters.minRating > 0) params.minRating = newFilters.minRating;
       if (newFilters.maxCost) params.maxCost = newFilters.maxCost;
       if (newFilters.availableTime) params.availableTime = newFilters.availableTime;
-      const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
+      const response = await axios.get(`${config.API_URL}/api/therapists/search`, { params });
       setFilteredTherapists(sortTherapists(response.data, sortConfig));
       setLoading(false);
     } catch (err) {

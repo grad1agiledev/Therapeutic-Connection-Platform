@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../firebaseConfig';
 import { onAuthStateChanged } from "firebase/auth";
 import { signOut } from 'firebase/auth';
+import config from '../config';
 
 const UserContext = createContext();
 
@@ -26,8 +27,7 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       if (user) {
-
-        fetch(`http://localhost:8080/api/users/${user.uid}`)
+        fetch(`${config.API_URL}/api/users/${user.uid}`)
           .then(res => res.json())
           .then(data => {
             setUserRole(data.role);
