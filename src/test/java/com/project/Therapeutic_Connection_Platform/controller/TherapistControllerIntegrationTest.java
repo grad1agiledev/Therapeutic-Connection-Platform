@@ -1,6 +1,8 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
-import com.project.Therapeutic_Connection_Platform.model.Therapist;
+import com.project.Therapeutic_Connection_Platform.model.*;
+import com.project.Therapeutic_Connection_Platform.service.TherapistService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,8 +29,34 @@ public class TherapistControllerIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private TherapistService therapistService;
+
+    @BeforeEach
+    void setUp() {
+        // Create test data
+        Therapist therapist = createTestTherapist();
+        therapistService.saveTherapist(therapist);
+    }
+
     private String getBaseUrl() {
         return "http://localhost:" + port + "/api/therapists";
+    }
+
+    private Therapist createTestTherapist() {
+        Therapist therapist = new Therapist();
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setFullName("Test Therapist");
+        therapist.setUser(user);
+        therapist.setSpecializations(Arrays.asList("Anxiety"));
+        Location location = new Location();
+        location.setName("Istanbul");
+        therapist.setLocation(location);
+        Language language = new Language();
+        language.setLangName("English");
+        therapist.setLanguages(Arrays.asList(language));
+        return therapist;
     }
 
     @Test
@@ -41,12 +70,23 @@ public class TherapistControllerIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
     }
 
     @Test
     void getTherapistById_withValidId_shouldReturnTherapist() {
+        // First get all therapists to get a valid ID
+        ResponseEntity<List<Therapist>> allResponse = restTemplate.exchange(
+            getBaseUrl(),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Therapist>>() {}
+        );
+        
+        Long validId = allResponse.getBody().get(0).getId();
+        
         ResponseEntity<Therapist> response = restTemplate.getForEntity(
-            getBaseUrl() + "/id/1",
+            getBaseUrl() + "/id/" + validId,
             Therapist.class
         );
 
@@ -75,6 +115,7 @@ public class TherapistControllerIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
     }
 
     @Test
@@ -88,5 +129,6 @@ public class TherapistControllerIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
     }
 } 
