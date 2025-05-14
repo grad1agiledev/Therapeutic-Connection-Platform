@@ -5,6 +5,7 @@ import TherapistList from './components/therapist/TherapistList';
 import Register from './Registration/Register'
 import Login from './Login/Login';
 import ReviewManagement from './components/admin/ReviewManagement';
+import UserList from './components/admin/UserList';
 import Profile from './ProfileManagement/Profile';
 import NavBar from './NavBar';
 import Calendar from './components/calendar/Calendar';
@@ -104,6 +105,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/admin/reviews" element={<ReviewManagement />} />
+                <Route path="/admin/users" element={<AdminRoute><UserList /></AdminRoute>} />
                 <Route path="/profile" element={<Profile />} />
                 <Route  path="/admin/verification" element={  <AdminRoute> <VerificationBoard /> </AdminRoute>         }
                 />

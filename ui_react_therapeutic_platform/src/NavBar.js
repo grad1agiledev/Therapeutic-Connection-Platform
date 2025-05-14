@@ -1,5 +1,5 @@
 // src/ProfileManagement/NavBar.js
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,14 +8,21 @@ import Box from '@mui/material/Box';
 import { useAuth } from './ProfileManagement/UserContext';
 import Logo from './logo.png';
 import Typography from '@mui/material/Typography';
+import { signOut } from 'firebase/auth';
+import { auth } from './firebaseConfig';
 
 function NavBar() {
-  const { currentUser, userRole, logOut } = useAuth();
+  const { user: currentUser, userRole } = useAuth();
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   async function handleLogout() {
-    await logOut();
-    navigate('/');
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   }
 
   return (
@@ -30,24 +37,22 @@ function NavBar() {
         <Button color="inherit" component={RouterLink} to="/">Home</Button>
         <Button color="inherit" component={RouterLink} to="/therapists">Therapists</Button>
         <Button color="inherit" component={RouterLink} to="/about">About Us</Button>
-        {!currentUser && (
+        {userRole === 'admin' && (
+          <>
+            <Button color="inherit" component={RouterLink} to="/admin/reviews">Review Management</Button>
+            <Button color="inherit" component={RouterLink} to="/admin/verification">Verification requests</Button>
+            <Button color="inherit" component={RouterLink} to="/admin/users">Terapistler</Button>
+          </>
+        )}
+        {currentUser ? (
+          <>
+            <Button color="inherit" component={RouterLink} to="/profile">Profile</Button>
+            <Button color="inherit" onClick={handleLogout} sx={{ ml: 2 }}>Log out</Button>
+          </>
+        ) : (
           <>
             <Button color="inherit" component={RouterLink} to="/login">Login</Button>
             <Button color="inherit" component={RouterLink} to="/register" sx={{ ml: 1, bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600, '&:hover': { bgcolor: '#FFECB3' } }}>Register</Button>
-          </>
-        )}
-        {currentUser && (
-          <>
-            {userRole !== 'admin' && (
-              <Button color="inherit" component={RouterLink} to="/profile">Profile</Button>
-            )}
-            {userRole === 'admin' && (
-              <>
-                <Button color="inherit" component={RouterLink} to="/admin/verification">Verification requests</Button>
-                <Button color="inherit" component={RouterLink} to="/admin/reviews">Review Management</Button>
-              </>
-            )}
-            <Button color="inherit" onClick={handleLogout} sx={{ ml: 2 }}>Log out</Button>
           </>
         )}
       </Toolbar>

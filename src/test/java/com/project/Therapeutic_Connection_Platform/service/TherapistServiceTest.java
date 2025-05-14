@@ -173,8 +173,10 @@ class TherapistServiceTest {
     }
 
     private User createTestUser(Long id) {
-        // Implementation of createTestUser method
-        return null; // Placeholder return, actual implementation needed
+        User user = new User();
+        user.setId(id);
+        user.setFullName("Test User " + id);
+        return user;
     }
 
     private Location createTestLocation(Long id) {
