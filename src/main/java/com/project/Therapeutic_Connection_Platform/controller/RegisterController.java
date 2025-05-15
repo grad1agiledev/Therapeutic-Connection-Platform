@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") // Allow access from all sources during development
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RegisterController {
 
     @Autowired private UserRepository userRepository;

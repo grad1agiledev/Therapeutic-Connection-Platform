@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/meetings")
-@CrossOrigin(origins = "*") // Allow access from all sources during development
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class MeetingController {
 
     @Autowired

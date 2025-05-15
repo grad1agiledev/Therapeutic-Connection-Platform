@@ -31,14 +31,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/therapists")
-@CrossOrigin(origins = "*",
-        methods = {
-                RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.OPTIONS
-        })
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class TherapistController {
 
     private final TherapistService therapistService;

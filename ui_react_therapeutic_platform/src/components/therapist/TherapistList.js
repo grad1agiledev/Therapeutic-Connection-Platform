@@ -12,7 +12,8 @@ import Box from '@mui/material/Box';
 import { auth, db } from '../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import axios from 'axios';
-import config from '../../config';
+
+const API_URL = 'http://localhost:8080';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);
@@ -35,7 +36,9 @@ const TherapistList = () => {
     const fetchTherapists = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${config.API_URL}/api/therapists`);
+        const response = await axios.get(`${API_URL}/api/therapists`, {
+          withCredentials: true
+        });
         setTherapists(response.data);
         setFilteredTherapists(sortTherapists(response.data, sortConfig));
         setLoading(false);
@@ -86,7 +89,10 @@ const TherapistList = () => {
       if (newFilters.minRating > 0) params.minRating = newFilters.minRating;
       if (newFilters.maxCost) params.maxCost = newFilters.maxCost;
       if (newFilters.availableTime) params.availableTime = newFilters.availableTime;
-      const response = await axios.get(`${config.API_URL}/api/therapists/search`, { params });
+      const response = await axios.get(`${API_URL}/api/therapists/search`, { 
+        params,
+        withCredentials: true
+      });
       setFilteredTherapists(sortTherapists(response.data, sortConfig));
       setLoading(false);
     } catch (err) {
