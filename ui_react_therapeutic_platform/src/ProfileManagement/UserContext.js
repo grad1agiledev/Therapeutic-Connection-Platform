@@ -24,26 +24,51 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+
       if (user) {
-        fetch(`${config.API_URL}/api/users/${user.uid}`)
-          .then(res => res.json())
-          .then(data => {
-            setUserRole(data.role);
-            setLoading(false);
-          })
-          .catch(err => {
-            console.error("Error fetching user data:", err);
-            setLoading(false);
-          });
+        try {
+
+          const res = await fetch(`${config.API_URL}/api/users/uid/${user.uid}`);
+
+          if (res.status === 404) {
+
+            await fetch(`${config.API_URL}/api/users/register`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                uid: user.uid,
+                name: user.displayName || "Unnamed User",
+                email: user.email,
+                phone: user.phoneNumber || "",
+                role: "client"
+              })
+            });
+
+            // Fetching again after registering
+            const retryRes = await fetch(`${config.API_URL}/api/users/uid/${user.uid}`);
+            const userData = await retryRes.json();
+            setUserRole(userData.role);
+          } else {
+            const userData = await res.json();
+            setUserRole(userData.role);
+          }
+
+        } catch (err) {
+          console.error("Error during backend fetch/register:", err);
+        } finally {
+          setLoading(false);
+        }
       } else {
         setUserRole(null);
         setLoading(false);
       }
     });
+
     return unsubscribe;
   }, []);
+
 
   const value = {
     currentUser,

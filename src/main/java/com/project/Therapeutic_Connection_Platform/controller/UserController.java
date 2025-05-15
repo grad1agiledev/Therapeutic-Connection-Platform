@@ -1,5 +1,6 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
+import com.project.Therapeutic_Connection_Platform.dto.UserRegisterRequest;
 import com.project.Therapeutic_Connection_Platform.dto.UserUpdateRequest;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.LocationRepository;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.UserRepository;
@@ -67,7 +68,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{uid}")
+    @GetMapping("/users/uid/{uid}")
     public ResponseEntity<User> getUserByUid(@PathVariable String uid) {
         User user = userRepository.findByFirebaseUid(uid);
 
@@ -78,7 +79,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{uid}")
+    @PutMapping("/users/uid/{uid}")
     public ResponseEntity<?> updateUser(
             @PathVariable String uid,
             @RequestBody UserUpdateRequest req) {
@@ -95,4 +96,31 @@ public class UserController {
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/users/register")
+    public ResponseEntity<?> registerUser(@RequestBody UserRegisterRequest req) {
+        if (userRepository.findByFirebaseUid(req.uid) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
+        }
+
+        User user = new User();
+        user.setUid(req.uid);
+        user.setFullName(req.name);
+        user.setEmail(req.email);
+        user.setPhone(req.phone);
+        user.setRole(req.role);
+        user.setAddress(req.address);
+
+        userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+    @GetMapping("/patients")
+    public List<User> getAllPatients() {
+        return userRepository.findByRole("patient");
+    }
+
+
 }
