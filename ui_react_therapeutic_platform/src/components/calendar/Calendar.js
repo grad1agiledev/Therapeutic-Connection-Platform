@@ -9,7 +9,10 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import Autocomplete from '@mui/material/Autocomplete';
+
 import { useNavigate } from 'react-router-dom';
+
 
 const modalStyle = {
   position: 'absolute',
@@ -29,6 +32,7 @@ function Calendar() {
   const { currentUser } = useAuth();
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [patients, setPatients] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     date: '',
@@ -39,8 +43,28 @@ function Calendar() {
 
   useEffect(() => {
     if (!currentUser?.uid) return;
-    fetchMeetings(currentUser.uid)
+
+    fetchMeetings(currentUser.uid);
+
+    fetch("http://localhost:8080/api/patients")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setPatients(data);
+        } else if (Array.isArray(data.patients)) {
+          // If your backend sends { patients: [...] }
+          setPatients(data.patients);
+        } else {
+          console.error("Unexpected patients response:", data);
+          setPatients([]); // fallback to empty array
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching patients:", err);
+        setPatients([]);
+      });
   }, [currentUser]);
+
 
   const fetchMeetings = (userId) => {
     fetch(`http://localhost:8080/api/meetings/details/${userId}`)
@@ -170,15 +194,27 @@ function Calendar() {
                 fullWidth
               />
             </Stack>
-            <TextField
-              label="Participants"
-              name="participants"
-              value={formData.participants}
-              onChange={handleChange}
-              fullWidth
-              placeholder="Enter participant emails, separated by commas"
-              sx={{ mb: 2 }}
-            />
+           <Autocomplete
+             multiple
+             options={patients}
+             getOptionLabel={(option) => `${option.fullName} (${option.email})`}
+             filterSelectedOptions
+             value={patients.filter(p => formData.participants.includes(p.email))}
+             onChange={(event, newValue) => {
+               setFormData(prev => ({
+                 ...prev,
+                 participants: newValue.map(p => p.email)
+               }));
+             }}
+             renderInput={(params) => (
+               <TextField
+                 {...params}
+                 label="Participants"
+                 placeholder="Type to search emails"
+                 sx={{ mb: 2 }}
+               />
+             )}
+           />
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button type="submit" variant="contained" sx={{ bgcolor: '#FFD54F', color: '#5D4037', fontWeight: 600 }}>
                 Save

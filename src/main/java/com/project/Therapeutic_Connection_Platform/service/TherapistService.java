@@ -53,9 +53,14 @@ public class TherapistService {
     public Therapist getTherapistByFirebaseUid(String firebaseUid) {
         User user = userRepository.findByFirebaseUid(firebaseUid);
         if (user == null || !"therapist".equalsIgnoreCase(user.getRole())) {
+            System.out.println("User not found with uid: " + firebaseUid);
             return null;
         }
-        return therapistRepository.findByUser(user);
+        Therapist therapist = therapistRepository.findByUser(user);
+        if (therapist == null) {
+            System.out.println("Therapist not found for user: " + user.getId());
+        }
+        return therapist;
     }
 
     public Therapist saveTherapist(Therapist therapist) {

@@ -8,5 +8,6 @@ public class UserRegisterRequest {
     public String role;
 
     public String email;
+    public String address;
 
 }

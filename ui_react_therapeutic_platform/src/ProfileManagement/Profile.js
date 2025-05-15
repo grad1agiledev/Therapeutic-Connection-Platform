@@ -133,7 +133,7 @@ export default function Profile() {
   useEffect(() => {
     if (!currentUser) return;
     Promise.all([
-      fetch(`${config.API_URL}/api/users/${currentUser.uid}`).then(r => r.json()),
+      fetch(`${config.API_URL}/api/users/uid/${currentUser.uid}`).then(r => r.json()),
       fetch(`${config.API_URL}/api/locations`).then(r => r.json()),
       fetch(`${config.API_URL}/api/languages`).then(r => r.json())
     ])
@@ -141,16 +141,30 @@ export default function Profile() {
         setFullName(userData.fullName);
         setPhone(userData.phone);
         setAddress(userData.address || '');
-        setLocId(
-          locs.find(l => `${l.name}, ${l.country}` === userData.address)?.id || ''
-        );
+        if (userRole !== 'therapist') {
+          const matchedLoc = locs.find(l => `${l.name}, ${l.country}` === userData.address);
+          if (matchedLoc) {
+            setLocId(matchedLoc.id);
+          } else if (TURKISH_CITIES.includes(userData.address.replace(', Turkey', ''))) {
+            setLocId(userData.address.replace(', Turkey', ''));
+          } else {
+            setLocId('');
+          }
+        }
+
         setLocations(locs);
         if (userRole === 'therapist') {
           fetch(`${config.API_URL}/api/therapists/${currentUser.uid}`)
             .then(r => r.json())
             .then(th => {
-              setSelectedLocation(th.location?.id || '');
-              setLocId(th.location?.id || '');
+             if (th.location) {
+               const locName = `${th.location.name}, ${th.location.country}`;
+               setSelectedLocation(locName);
+               setLocId(th.location.id);
+             } else {
+               setSelectedLocation('');
+               setLocId('');
+             }
               setSpecializations(th.specializations || []);
               setBio(th.bio || '');
               setSessionCost(th.sessionCost || 0);
@@ -174,15 +188,14 @@ export default function Profile() {
     setLocId(newId);
     
     // Check if the value is a number (location id) or a string (city name)
-    if (!isNaN(parseInt(newId, 10))) {
-      const loc = locations.find(l => l.id === parseInt(newId, 10));
-      if (loc) {
-        setAddress(`${loc.name}, ${loc.country}`);
-      }
-    } else {
-      // Handle Turkey cities directly
-      setAddress(`${newId}, Turkey`);
-    }
+   if (!isNaN(parseInt(newId, 10))) {
+     const loc = locations.find(l => l.id === parseInt(newId, 10));
+     if (loc) {
+       setAddress(`${loc.name}, ${loc.country}`);
+     }
+   } else {
+     setAddress(`${newId}, Turkey`);
+   }
   };
 
   const handleSubmit = async e => {
@@ -190,15 +203,23 @@ export default function Profile() {
     setError('');
     setSuccess('');
     try {
+      const userData = await fetch(`${config.API_URL}/api/users/uid/${currentUser.uid}`).then(r => r.json())
+
+
+      const userId = userData.id;
+
+
       const userPayload = { fullName, phone, address };
-      const res1 = await fetch(
-        `${config.API_URL}/api/users/${currentUser.uid}`,
+      const res1 = await fetch(`${config.API_URL}/api/users/uid/${currentUser.uid}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userPayload)
         }
+
+
       );
+
       if (!res1.ok) {
         const text = await res1.text();
         throw new Error(`User update failed: ${res1.status} ${text}`);
@@ -283,15 +304,19 @@ export default function Profile() {
             <InputLabel id="location-label">Location</InputLabel>
             <Select
               labelId="location-label"
-              value={locId}
+              value={String(locId)}
               label="Location"
               onChange={handleLocationChange}
               required
             >
+
               <MenuItem value="">-- Select --</MenuItem>
               {locations.map(loc => (
-                <MenuItem key={loc.id} value={loc.id}>{loc.name}, {loc.country}</MenuItem>
+                <MenuItem key={loc.id} value={String(loc.id)}>
+                  {loc.name}, {loc.country}
+                </MenuItem>
               ))}
+
               <MenuItem disabled sx={{ opacity: 0.6, mt: 1, fontWeight: 'bold' }}>
                 --- Turkey Cities ---
               </MenuItem>

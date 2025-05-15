@@ -92,14 +92,14 @@ function Register() {
     try {
       const userInfos = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userInfos.user.uid;
-      await fetch(`${config.API_URL}/api/register`, {
+      await fetch(`${config.API_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           uid: uid,
           name: name,
           phone: phone,
-          location: selectedLocation,
+          address: `${selectedLocation}, Turkey`,
           role: role,
           email: email,
         }),

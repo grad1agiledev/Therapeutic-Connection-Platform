@@ -26,6 +26,7 @@ public class Therapist {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Location location;
 
     @ManyToMany
