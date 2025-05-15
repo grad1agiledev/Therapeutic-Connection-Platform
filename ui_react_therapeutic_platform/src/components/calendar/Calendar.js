@@ -52,11 +52,11 @@ function Calendar() {
         if (Array.isArray(data)) {
           setPatients(data);
         } else if (Array.isArray(data.patients)) {
-          // If your backend sends { patients: [...] }
+
           setPatients(data.patients);
         } else {
           console.error("Unexpected patients response:", data);
-          setPatients([]); // fallback to empty array
+          setPatients([]);
         }
       })
       .catch(err => {
