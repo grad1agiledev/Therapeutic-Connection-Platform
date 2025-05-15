@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Badge } from 'react-bootstrap';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import TherapistFilter from './TherapistFilter';
 import TherapistSort from './TherapistSort';
 import TherapistDetail from './TherapistDetail';
-import './TherapistList.css';
+import TherapistCard from './TherapistCard';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { auth, db } from '../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import axios from 'axios';
+
+const API_URL = 'http://localhost:8080';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);
@@ -29,7 +36,9 @@ const TherapistList = () => {
     const fetchTherapists = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8080/api/therapists');
+        const response = await axios.get(`${API_URL}/api/therapists`, {
+          withCredentials: true
+        });
         setTherapists(response.data);
         setFilteredTherapists(sortTherapists(response.data, sortConfig));
         setLoading(false);
@@ -39,21 +48,16 @@ const TherapistList = () => {
         console.error('Therapist loading error:', err);
       }
     };
-
     fetchTherapists();
   }, []);
 
   const sortTherapists = (therapistList, { field, order }) => {
     return [...therapistList].sort((a, b) => {
       let comparison = 0;
-
       switch (field) {
         case 'name':
           comparison = a.user.fullName.localeCompare(b.user.fullName);
           break;
-//        case 'experience':
-//          comparison = a.yearsOfExperience - b.yearsOfExperience;
-//          break;
         case 'rating':
           comparison = a.rating - b.rating;
           break;
@@ -63,26 +67,20 @@ const TherapistList = () => {
         default:
           comparison = 0;
       }
-
       return order === 'asc' ? comparison : -comparison;
     });
   };
 
   const handleFilterChange = async (newFilters) => {
     setFilters(newFilters);
-    
     try {
       setLoading(true);
-      
-      // Show all therapists if filters are empty
       if (!newFilters.specialization && !newFilters.location && newFilters.languages.length === 0 &&
           !newFilters.virtualAvailable && newFilters.minRating === 0 && !newFilters.maxCost && !newFilters.availableTime) {
         setFilteredTherapists(sortTherapists(therapists, sortConfig));
         setLoading(false);
         return;
       }
-      
-      // Create filter parameters
       const params = {};
       if (newFilters.specialization) params.specialization = newFilters.specialization;
       if (newFilters.location) params.location = newFilters.location;
@@ -91,8 +89,10 @@ const TherapistList = () => {
       if (newFilters.minRating > 0) params.minRating = newFilters.minRating;
       if (newFilters.maxCost) params.maxCost = newFilters.maxCost;
       if (newFilters.availableTime) params.availableTime = newFilters.availableTime;
-      
-      const response = await axios.get('http://localhost:8080/api/therapists/search', { params });
+      const response = await axios.get(`${API_URL}/api/therapists/search`, { 
+        params,
+        withCredentials: true
+      });
       setFilteredTherapists(sortTherapists(response.data, sortConfig));
       setLoading(false);
     } catch (err) {
@@ -112,63 +112,40 @@ const TherapistList = () => {
   };
 
   return (
-    <div className="therapist-list-container">
-      <h1>Therapist Profiles</h1>
-      <p className="intro-text">
+    <Box sx={{ bgcolor: '#FFF8E1', borderRadius: 3, p: 3, boxShadow: 2 }}>
+      <Typography variant="h3" color="primary" gutterBottom fontWeight={700}>
+        Therapist Profiles
+      </Typography>
+      <Typography variant="body1" color="text.secondary" mb={2}>
         You can browse therapist profiles without registering. Registration will be required to book appointments.
-      </p>
-      
+      </Typography>
       <TherapistFilter onFilterChange={handleFilterChange} />
       <TherapistSort onSortChange={handleSortChange} />
-      
-      <div className="therapist-count">
+      <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2, mb: 2 }}>
         {filteredTherapists.length} therapists found
-      </div>
-      
-      <Row>
-        {filteredTherapists.map(therapist => (
-          <Col key={therapist.id} md={4} className="mb-4">
-            <Card className="therapist-card">
-              <Card.Body>
-                <Card.Title>{therapist.name}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">
-                  {therapist.specialization}
-                </Card.Subtitle>
-                
-                <div className="therapist-info">
-                  <p><strong>Location:</strong> {therapist.location}</p>
-                  <p><strong>Languages:</strong> {therapist.languages.join(', ')}</p>
-                  <p><strong>Rating:</strong> {therapist.rating} ⭐</p>
-                  <p><strong>Cost:</strong> ${therapist.cost}/session</p>
-                </div>
-
-                <div className="therapist-availability">
-                  {therapist.virtualAvailable && (
-                    <Badge bg="info" className="me-2">Virtual Sessions</Badge>
-                  )}
-                  {therapist.availableTimes.map(time => (
-                    <Badge key={time} bg="secondary" className="me-2">
-                      {time.charAt(0).toUpperCase() + time.slice(1)}
-                    </Badge>
-                  ))}
-                </div>
-
-                <button className="btn btn-primary mt-3" onClick={() => handleViewProfile(therapist.id)}>
-                  View Profile
-                </button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      
+      </Typography>
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress color="primary" />
+        </Box>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : (
+        <Grid container spacing={3}>
+          {filteredTherapists.map(therapist => (
+            <Grid item xs={12} sm={6} md={4} key={therapist.id}>
+              <TherapistCard therapist={therapist} onViewProfile={handleViewProfile} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
       {selectedTherapistId && (
         <TherapistDetail 
           therapistId={selectedTherapistId} 
           onBack={() => setSelectedTherapistId(null)} 
         />
       )}
-    </div>
+    </Box>
   );
 };
 

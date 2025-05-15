@@ -36,10 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-# Environment Variables
-.env
-*.env
-.env.local
-.env.*.local
 
 project_description.txt
+src/main/resources/firebase/*.json

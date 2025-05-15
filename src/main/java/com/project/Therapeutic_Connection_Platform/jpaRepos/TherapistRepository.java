@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TherapistRepository extends JpaRepository<Therapist,Long> {
+public interface TherapistRepository extends JpaRepository<Therapist, Long> {
 
     Optional<Therapist> findById(Long id);
     List<Therapist> findAll();

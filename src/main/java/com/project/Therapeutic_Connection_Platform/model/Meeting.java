@@ -1,41 +1,41 @@
 package com.project.Therapeutic_Connection_Platform.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Meeting {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String meetingName;
-    private String meetingPassword;
-    private List<Long> userIds; // List of user IDs associated with the meeting
 
-    public Meeting(Long id, String meetingName, String meetingPassword, List<Long> userIds) {
-        this.id = id;
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
+
+    @ElementCollection
+    @CollectionTable(name = "meeting_user_ids", joinColumns = @JoinColumn(name = "meeting_id"))
+    @Column(name = "user_id")
+    private List<String> participantIds = new ArrayList<>();
+
+    public Meeting() {}
+
+    public Meeting(String meetingName, LocalDateTime startTime, LocalDateTime endTime, List<String> participantIds) {
         this.meetingName = meetingName;
-        this.meetingPassword = meetingPassword;
-        this.userIds = userIds;
-    }
-    public Meeting(Long id, List<Long> userIds) {
-        this.id = id;
-        //name consists of the user ids and the meeting id. 
-
-        StringBuilder nameBuilder = new StringBuilder();
-
-        nameBuilder.append("Session ");
-        for (Long userId : userIds) {
-            nameBuilder.append(userId);
-        }
-        nameBuilder.append(id);
-        this.meetingName = nameBuilder.toString();
-        this.meetingPassword = "";
-        this.userIds = userIds;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.participantIds = participantIds;
     }
 
-    //getters and setters
+    // Getters and setters
+
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getMeetingName() {
@@ -46,32 +46,39 @@ public class Meeting {
         this.meetingName = meetingName;
     }
 
-    public String getMeetingPassword() {
-        return meetingPassword;
-    }   
-
-    public void setMeetingPassword(String meetingPassword) {
-        this.meetingPassword = meetingPassword;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public List<Long> getUserIds() {
-        return userIds;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public void setUserIds(List<Long> userIds) {
-        this.userIds = userIds;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void addUser(Long userId) {
-        this.userIds.add(userId);
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
-    public void removeUser(Long userId) {
-        this.userIds.remove(userId);
+    public List<String> getParticipantIds() {
+        return participantIds;
     }
 
-    public boolean containsUser(Long userId) {
-        return this.userIds.contains(userId);
+    public void setParticipantIds(List<String> participantIds) {
+        this.participantIds = participantIds;
     }
 
+    public void addUserId(String userId) {
+        this.participantIds.add(userId);
+    }
+
+    public void removeUserId(String userId) {
+        this.participantIds.remove(userId);
+    }
+
+    public boolean containsUserId(String userId) {
+        return this.participantIds.contains(userId);
+    }
 }

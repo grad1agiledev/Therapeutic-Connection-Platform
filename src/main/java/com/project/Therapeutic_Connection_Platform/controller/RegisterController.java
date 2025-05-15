@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") // Allow access from all sources during development
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RegisterController {
 
     @Autowired private UserRepository userRepository;
@@ -46,7 +48,7 @@ public class RegisterController {
         {
             Therapist therapist = new Therapist();
             therapist.setUser(user);
-            therapist.setSpecialization("");
+            therapist.setSpecializations(new ArrayList<>());
             therapist.setProfilePicture("https://randomuser.me/api/portraits/men/1.jpg");
             therapist.setBio("");
             therapist.setSessionCost(0.0);

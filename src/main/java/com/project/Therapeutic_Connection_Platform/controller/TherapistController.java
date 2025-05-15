@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,18 +31,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/therapists")
-@CrossOrigin(origins = "*",
-        methods = {
-                RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.OPTIONS
-        })
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class TherapistController {
 
     private final TherapistService therapistService;
     private final LocationRepository locationRepo;
+
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
 
     @Autowired private LanguageRepository languageRepo;
     @Autowired
@@ -65,6 +62,24 @@ public class TherapistController {
         return ResponseEntity.ok(therapist);
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Therapist> getTherapistById(@PathVariable String id) {
+        Therapist therapist = therapistService.getTherapistById(id);
+        if (therapist == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(therapist);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Therapist>> searchTherapists(
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) List<String> languages) {
+        List<Therapist> therapists = therapistService.searchTherapists(specialization, location, languages);
+        return ResponseEntity.ok(therapists);
+    }
+
     /*
     Updating the all therapists info if accessed a request
      */
@@ -80,9 +95,10 @@ public class TherapistController {
             );
         }
 
-        if (req.specialization != null) therapist.setSpecialization(req.specialization);
-        if (req.bio           != null) therapist.setBio(req.bio);
-        if (req.sessionCost   != null) therapist.setSessionCost(req.sessionCost);
+        if (req.specializations != null) therapist.setSpecializations(req.specializations);
+        if (req.bio != null) therapist.setBio(req.bio);
+        if (req.sessionCost != null) therapist.setSessionCost(req.sessionCost);
+        if (req.isVirtual != null) therapist.setVirtual(req.isVirtual);
 
         if (req.locationId != null) {
             Location loc = locationRepo.findById(req.locationId)
@@ -90,10 +106,6 @@ public class TherapistController {
                             HttpStatus.BAD_REQUEST, "Invalid locationId"));
             therapist.setLocation(loc);
         }
-
-       // therapist.setLanguages(req.languages);
-
-
 
         List<Language> langs = languageRepo.findAllById(req.languageIds);
         therapist.setLanguages(langs);
@@ -123,8 +135,7 @@ public class TherapistController {
         }
 
         // absolute path creating for the db record
-        String url = "http://localhost:8080/uploads/" + filename;
-
+        String url = baseUrl + "/uploads/" + filename;
 
         t.setProfilePicture(url);
         therapistService.saveTherapist(t);
@@ -171,7 +182,7 @@ public class TherapistController {
             Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        String url = "http://localhost:8080/uploads/licences/" + filename;
+        String url = baseUrl + "/uploads/licences/" + filename;
         return ResponseEntity.ok(Map.of("url", url));
     }
 
