@@ -11,4 +11,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     User findByFirebaseUid(String firebaseUid);
     List<User> findByRole(String role);
+    User findByEmail(String email);
 }

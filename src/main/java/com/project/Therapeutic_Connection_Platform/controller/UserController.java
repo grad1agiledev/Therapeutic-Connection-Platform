@@ -1,5 +1,6 @@
 package com.project.Therapeutic_Connection_Platform.controller;
 
+import com.project.Therapeutic_Connection_Platform.dto.UserEmailResponse;
 import com.project.Therapeutic_Connection_Platform.dto.UserRegisterRequest;
 import com.project.Therapeutic_Connection_Platform.dto.UserUpdateRequest;
 import com.project.Therapeutic_Connection_Platform.jpaRepos.LocationRepository;
@@ -120,6 +121,23 @@ public class UserController {
     @GetMapping("/patients")
     public List<User> getAllPatients() {
         return userRepository.findByRole("patient");
+    }
+
+
+    @GetMapping("/users/idByEmail/{email}")
+    public ResponseEntity<?> getUserByEmail(@PathVariable("email") String email) {
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User with email " + email + " not found");
+            }
+
+            return ResponseEntity.ok().body(new UserEmailResponse(user.getUid(), user.getFullName(), user.getRole()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal error");
+        }
     }
 
 
