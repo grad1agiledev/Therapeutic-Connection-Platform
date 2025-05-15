@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
+import Snackbar from '@mui/material/Snackbar';
 //import { UserContext } from './UserContext';
 
 function Login() {
@@ -20,10 +21,18 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   const handleLogin = async (e) => {
@@ -32,8 +41,11 @@ function Login() {
     try {
       const userInfos = await signInWithEmailAndPassword(auth, email, password);
       console.log('User logged in:', userInfos.user);
-      alert('Login successful!');
-      navigate('/profile');
+      // alert('Login successful!'); // Eski bildirim yöntemi
+      setOpenSnackbar(true); // Snackbar'ı göster
+      setTimeout(() => {
+        navigate('/profile');
+      }, 1500); // 1.5 saniye sonra profile sayfasına yönlendir
     } catch (error) {
       console.error('Login error:', error.message);
       setError(error.message);
@@ -83,6 +95,23 @@ function Login() {
           </Button>
         </Box>
       </Box>
+      
+      {/* Başarılı giriş bildirimi için Snackbar */}
+      <Snackbar 
+        open={openSnackbar} 
+        autoHideDuration={3000} 
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleSnackbarClose} 
+          severity="success" 
+          variant="filled"
+          sx={{ width: '100%', boxShadow: 4 }}
+        >
+          Giriş başarılı! Profilinize yönlendiriliyorsunuz.
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

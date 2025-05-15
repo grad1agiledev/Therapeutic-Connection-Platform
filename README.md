@@ -205,6 +205,10 @@ To view users from Firestore in your terminal:
 - Easy selection of Turkey cities
 - When a city is selected, the address is automatically saved in "City, Turkey" format
 
+### 2024-07-08: Added in-app notification system using Material UI's Snackbar component for login success messages instead of browser alerts
+- The notification appears as a top-center pop-up with auto-dismiss functionality
+- Improved user experience with smooth transition between login and profile navigation
+
 ## Development Notes
 
 When working with the Therapist model, note that the `isVirtual` field should be defined as object-type `Boolean` rather than primitive `boolean` to handle null values properly:
