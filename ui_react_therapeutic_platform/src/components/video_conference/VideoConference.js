@@ -1,9 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { JitsiMeeting } from "@jitsi/react-sdk";
+import { useAuth } from '../../ProfileManagement/UserContext';
 import "./VideoConference.css";
 
-const VideoConference = ({ meetingID }) => {
+const VideoConference = () => {
    //get meeting details from /api/meeting/deatils/{userID}
+    const { meetingID } = useParams(); // Get meetingID from URL
+    const { currentUser } = useAuth();
+
     const [meetingDetails, setMeetingDetails] = useState(null);
     useEffect(() => {
         const fetchMeetingDetails = async () => {
@@ -19,19 +24,19 @@ const VideoConference = ({ meetingID }) => {
                 console.error('Error fetching meeting details:', error);
             }
         };
-
+        console.log(currentUser.displayName)
         fetchMeetingDetails();
     }
     , [meetingID]);
 
     return (
         <div className="video-conference-container">
-                {(meetingDetails) ? (<JitsiMeeting
-                    roomName = {meetingDetails.meetingName}
+                {(meetingDetails && currentUser) ? (<JitsiMeeting
+                    roomName = {meetingDetails.meetingName + "-" +  meetingDetails.id}
                     userInfo={
                         {
                             //TODO: get the logged in username
-                            displayName: "Logged in user",
+                            displayName: currentUser.displayName || "Guest",
                         }
                     }
                     getIFrameRef = { (iframeRef) => { iframeRef.className = 'jitsi-meeting-iframe'; } }

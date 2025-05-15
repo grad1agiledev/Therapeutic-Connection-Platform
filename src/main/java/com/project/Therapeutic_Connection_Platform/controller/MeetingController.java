@@ -50,4 +50,15 @@ public class MeetingController {
         List<Meeting> meetings = meetingService.getAllMeetings();
         return ResponseEntity.ok(meetings);
     }
+
+    // Delete a specific meeting by ID
+@GetMapping("/delete/{meetingId}")
+public ResponseEntity<Void> deleteMeeting(@PathVariable Long meetingId) {
+    boolean deleted = meetingService.deleteMeeting(meetingId);
+    if (!deleted) {
+        return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.noContent().build();
+}
+
 }

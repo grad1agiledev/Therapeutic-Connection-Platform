@@ -6,6 +6,7 @@ import Register from './Registration/Register'
 import Login from './Login/Login';
 import ReviewManagement from './components/admin/ReviewManagement';
 import UserList from './components/admin/UserList';
+import VideoConference from './components/video_conference/VideoConference';
 import Profile from './ProfileManagement/Profile';
 import NavBar from './NavBar';
 import Calendar from './components/calendar/Calendar';
@@ -109,6 +110,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route  path="/admin/verification" element={  <AdminRoute> <VerificationBoard /> </AdminRoute>         }
                 />
+                <Route path="/meeting/:meetingID" element={<VideoConference />} /> 
               </Routes>
             </Container>
           </main>

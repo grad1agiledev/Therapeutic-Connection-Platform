@@ -42,4 +42,12 @@ public class MeetingService {
     public List<Meeting> getAllMeetings() {
         return meetingRepository.findAll();
     }
+    public boolean deleteMeeting(Long meetingId) {
+        if (!meetingRepository.existsById(meetingId)) {
+            return false;
+        }
+        meetingRepository.deleteById(meetingId);
+        return true;
+    }
+    
 }

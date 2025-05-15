@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Autocomplete from '@mui/material/Autocomplete';
 
+import { useNavigate } from 'react-router-dom';
+
 
 const modalStyle = {
   position: 'absolute',
@@ -26,6 +28,7 @@ const modalStyle = {
 };
 
 function Calendar() {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -120,6 +123,12 @@ function Calendar() {
       [name]: value,
       participants: name === 'participants' ? value.split(',').map(email => email.trim()) : prev.participants,
     }));
+  };
+
+  const handleEventClick = (info) => {
+    const eventId = info.event.id;
+    console.log("Event ID:", eventId);
+    navigate(`/meeting/${eventId}`);
   };
 
   const createEvent = (date) => {
@@ -230,6 +239,7 @@ function Calendar() {
           selectable={true}
           events={events}
           select={(info) => createEvent(new Date(info.startStr))}
+          eventClick={handleEventClick}
           height="auto"
         />
       </Box>
