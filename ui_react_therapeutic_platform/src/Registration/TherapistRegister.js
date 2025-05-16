@@ -13,7 +13,7 @@ const TherapistProfile = () => {
 
           const uid = user.uid;
 
-          const response = await fetch(`http://localhost:8080/api/therapists/by-uid/${uid}`);
+          const response = await fetch(`https://therapeutic-connection-platform-1.onrender.com/api/therapists/by-uid/${uid}`);
           if (!response.ok) throw new Error('Failed to fetch therapist info');
 
           const data = await response.json();
