@@ -37,6 +37,8 @@ out/
 ### VS Code ###
 .vscode/
 
+.dockerignore
+
 
 project_description.txt
 src/main/resources/firebase/*.json
