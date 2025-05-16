@@ -28,7 +28,7 @@ const TherapistReview = ({ therapistId, sessionId, onReviewSubmitted }) => {
     setError('');
 
     try {
-      await axios.post('http://localhost:8080/api/reviews', {
+      await axios.post('https://therapeutic-connection-platform-1.onrender.com', {
         therapistId,
         sessionId,
         rating,

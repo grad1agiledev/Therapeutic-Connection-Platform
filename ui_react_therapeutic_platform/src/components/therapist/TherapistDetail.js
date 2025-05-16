@@ -13,7 +13,7 @@ const TherapistDetail = ({ therapistId, onBack }) => {
     const fetchTherapistDetail = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:8080/api/therapists/${therapistId}`);
+        const response = await axios.get(`https://therapeutic-connection-platform-1.onrender.com/api/therapists/${therapistId}`);
         setTherapist(response.data);
         setLoading(false);
       } catch (err) {

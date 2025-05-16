@@ -26,7 +26,7 @@ const UserList = () => {
       try {
         setLoading(true);
         // Azure veritabanından sadece terapist rolündeki kullanıcıları çekmek için API çağrısı
-        const response = await axios.get('http://localhost:8080/api/users/role/therapist');
+        const response = await axios.get('https://therapeutic-connection-platform-1.onrender.com/api/users/role/therapist');
         setUsers(response.data);
         setFilteredUsers(response.data);
         setLoading(false);

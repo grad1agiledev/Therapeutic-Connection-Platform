@@ -21,7 +21,7 @@ const ReviewManagement = () => {
 
     const fetchPendingReviews = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/reviews/pending');
+            const response = await axios.get('https://therapeutic-connection-platform-1.onrender.com/api/reviews/pending');
             setReviews(response.data);
             setLoading(false);
         } catch (err) {
@@ -32,7 +32,7 @@ const ReviewManagement = () => {
 
     const handleApprove = async (reviewId) => {
         try {
-            await axios.post(`http://localhost:8080/api/reviews/${reviewId}/approve`, adminComment);
+            await axios.post(`https://therapeutic-connection-platform-1.onrender.com/api/reviews/${reviewId}/approve`, adminComment);
             setAdminComment('');
             fetchPendingReviews();
         } catch (err) {
@@ -42,7 +42,7 @@ const ReviewManagement = () => {
 
     const handleReject = async (reviewId) => {
         try {
-            await axios.post(`http://localhost:8080/api/reviews/${reviewId}/reject`, adminComment);
+            await axios.post(`https://therapeutic-connection-platform-1.onrender.com/api/reviews/${reviewId}/reject`, adminComment);
             setAdminComment('');
             fetchPendingReviews();
         } catch (err) {

@@ -18,7 +18,7 @@ export default function VerificationBoard() {
 
   async function load() {
     setLoading(true);
-    const res = await fetch('http://localhost:8080/api/admin/verification/pending');
+    const res = await fetch('https://therapeutic-connection-platform-1.onrender.com/api/admin/verification/pending');
     setPending(await res.json());
     setLoading(false);
   }
@@ -28,7 +28,7 @@ export default function VerificationBoard() {
   async function approve(id) {
     setBusyId(id);
     await fetch(
-      `http://localhost:8080/api/admin/verification/${id}/approve`,
+      `https://therapeutic-connection-platform-1.onrender.com/api/admin/verification/${id}/approve`,
       { method: 'PUT' }
     );
     await load();
