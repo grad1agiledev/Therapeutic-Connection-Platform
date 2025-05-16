@@ -13,7 +13,7 @@ import { auth, db } from '../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080';
+const API_URL = 'https://therapeutic-connection-platform-1.onrender.com';
 
 const TherapistList = () => {
   const [therapists, setTherapists] = useState([]);

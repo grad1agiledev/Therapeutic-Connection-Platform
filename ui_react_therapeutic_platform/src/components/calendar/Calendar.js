@@ -13,6 +13,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import { useNavigate } from 'react-router-dom';
 
+const BASE_API_URL = 'https://therapeutic-connection-platform-1.onrender.com';
+
+
 
 const modalStyle = {
   position: 'absolute',
@@ -46,7 +49,7 @@ function Calendar() {
 
     fetchMeetings(currentUser.uid);
 
-    fetch("http://localhost:8080/api/patients")
+    fetch("https://therapeutic-connection-platform-1.onrender.com/api/patients")
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -67,7 +70,7 @@ function Calendar() {
 
 
   const fetchMeetings = (userId) => {
-    fetch(`http://localhost:8080/api/meetings/details/${userId}`)
+      fetch(`${BASE_API_URL}/api/meetings/details/${userId}`)
       .then(res => res.json())
       .then(meetings => {
         const calendarEvents = meetings.map(meeting => ({
@@ -90,7 +93,7 @@ function Calendar() {
       const emailList = formData.participants;
 
       const userIdPromises = emailList.map(email =>
-        fetch(`http://localhost:8080/api/users/idByEmail/${encodeURIComponent(email)}`)
+      fetch(`${BASE_API_URL}/api/users/idByEmail/${encodeURIComponent(email)}`)
           .then(res => {
             if (!res.ok) throw new Error(`Failed to fetch userID for ${email}`);
             return res.json();
@@ -111,7 +114,7 @@ function Calendar() {
         endTime: `${formData.date}T${formData.endTime}`,
         participantIds: participantIds,
       };
-      fetch('http://localhost:8080/api/meetings/create', {
+      fetch('https://therapeutic-connection-platform-1.onrender.com/api/meetings/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

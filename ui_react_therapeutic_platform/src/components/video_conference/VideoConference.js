@@ -13,7 +13,7 @@ const VideoConference = () => {
     useEffect(() => {
         const fetchMeetingDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/meetings/${meetingID}`);
+                const response = await fetch(`https://therapeutic-connection-platform-1.onrender.com/api/meetings/${meetingID}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
