@@ -31,7 +31,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/therapists")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "https://therapeutic-connection-platform-1.onrender.com", allowCredentials = "true")
 public class TherapistController {
 
     private final TherapistService therapistService;

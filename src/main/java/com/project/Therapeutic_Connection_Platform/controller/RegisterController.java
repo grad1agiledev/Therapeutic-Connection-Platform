@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "https://therapeutic-connection-platform-1.onrender.com", allowCredentials = "true")
 public class RegisterController {
 
     @Autowired private UserRepository userRepository;

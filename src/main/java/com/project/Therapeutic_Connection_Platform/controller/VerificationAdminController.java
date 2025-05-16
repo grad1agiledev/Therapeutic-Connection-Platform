@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/verification")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://therapeutic-connection-platform-1.onrender.com")
 public class VerificationAdminController {
 
 
