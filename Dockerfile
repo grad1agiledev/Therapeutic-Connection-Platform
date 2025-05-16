@@ -1,5 +1,5 @@
 # Use an official OpenJDK runtime as a parent image
-
+FROM gradle:7.6-jdk17 AS builder
 COPY . /app
 # Set the working directory
 WORKDIR /app
